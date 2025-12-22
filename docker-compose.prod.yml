@@ -1,0 +1,31 @@
+services:
+
+  backend:
+    image: sumnic82/ry-backend:${IMAGE_TAG}
+    env_file:
+      - ./apps/backend/.env
+    volumes:
+      - ./backend/apps/static:/app/static
+    networks:
+      - ry_net
+
+  postgres:
+    image: postgres:16
+    env_file:
+      - ./apps/backend/.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - ry_net
+
+  migrate:
+    image: sumnic82/rodnaya-server:${IMAGE_TAG}
+    command: yarn migrate:prod
+    depends_on:
+      - postgres
+
+
+networks:
+  ry_net:
+volumes:
+  pgdata:

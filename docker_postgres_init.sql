@@ -1,0 +1,2 @@
+CREATE DATABASE ry_db;
+

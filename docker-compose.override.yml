@@ -1,0 +1,6 @@
+services:
+  backend:
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+    command: yarn start:dev

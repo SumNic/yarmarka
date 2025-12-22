@@ -1,0 +1,33 @@
+services:
+
+  backend:
+    build:
+      context: ./apps/backend
+      target: dev
+    env_file:
+      - ./apps/backend/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+    - postgres
+    networks:
+      - ry_net
+    restart: always
+
+  postgres:
+    image: postgres:16
+    env_file:
+      - ./apps/backend/.env
+    environment:
+      POSTGRES_DB: ry_db
+    volumes:
+      # - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - ry_net
+
+volumes:
+  pgdata:
+
+networks:
+  ry_net:

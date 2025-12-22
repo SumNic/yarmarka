@@ -1,10 +1,59 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as Joi from 'joi/lib';
+import { JwtModule } from '@nestjs/jwt';
+import * as cookieParser from 'cookie-parser';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { RefreshTokenMiddleware } from 'src/common/middleware/refresh-token.middleware';
+import { User } from 'src/common/models/User.model';
+import { Product } from 'src/common/models/Product.model';
+import { Service } from 'src/common/models/Service.model';
+import { Job } from 'src/common/models/Job.model';
+import { Resume } from 'src/common/models/Resume.model';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            validationSchema: Joi.object({
+                PORT: Joi.number().required(),
+                CLIENT_URL: Joi.string().required(),
+                JWT_SECRET: Joi.string().required(),
+                JWT_REFRESH_SECRET: Joi.string().required(),
+                JWT_EXPIRATION: Joi.string().required(),
+                POSTGRES_URI: Joi.string().required(),
+                DOMEN: Joi.string().required(),
+            }),
+            envFilePath: '.env',
+        }),
+        JwtModule.registerAsync({
+            useFactory: (configService: ConfigService) => ({
+                secret: configService.get<string>('JWT_SECRET'),
+                signOptions: {
+                    expiresIn: `${configService.get('JWT_EXPIRATION')}s`,
+                },
+                configure(consumer: MiddlewareConsumer) {
+                    consumer.apply(cookieParser()).forRoutes('*');
+                },
+            }),
+            inject: [ConfigService],
+        }),
+        SequelizeModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                uri: configService.get<string>('POSTGRES_URI'),
+                dialect: 'postgres',
+                models: [User, Product, Service, Job, Resume],
+                autoLoadModels: true,
+                synchronize: true,
+            }),
+            inject: [ConfigService],
+        }),
+    ],
+    controllers: [],
+    providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(cookieParser(), RefreshTokenMiddleware).forRoutes('*');
+    }
+}
