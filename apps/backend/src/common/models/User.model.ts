@@ -6,80 +6,103 @@ import { Resume } from 'src/common/models/Resume.model';
 import { Service } from 'src/common/models/Service.model';
 
 export enum Role {
-    ADMIN = 'ADMIN',
-    USER = 'USER',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
 }
 
 export enum EstateType {
-    INDIVIDUAL = 'INDIVIDUAL',
-    SETTLEMENT = 'SETTLEMENT',
+  INDIVIDUAL = 'INDIVIDUAL',
+  SETTLEMENT = 'SETTLEMENT',
 }
 
-interface UserCreationAttrs {
-    email: string;
-    password: string;
-    name: string;
-    role?: Role;
+export interface UserCreationAttrs {
+  email: string;
+  password: string;
+  name: string;
+  role?: Role;
 
-    country?: string;
-    region?: string;
-    district?: string;
-    isEstate?: boolean;
-    estateType?: EstateType;
-    settlement?: string;
+  isEmailVerified?: boolean;
+  emailVerificationTokenHash?: string;
+  emailVerificationTokenExpiresAt?: Date;
+  refreshTokenHash?: string;
+
+  country?: string;
+  region?: string;
+  district?: string;
+  isEstate?: boolean;
+  estateType?: EstateType;
+  settlement?: string;
 }
 
 @Table({ tableName: 'users' })
 export class User extends Model<User, UserCreationAttrs> {
-    @ApiProperty({ type: Number })
-    @Column({
-        type: DataType.INTEGER,
-        unique: true,
-        autoIncrement: true,
-        primaryKey: true,
-    })
-    declare id: number;
+  @ApiProperty({ type: Number })
+  @Column({
+    type: DataType.INTEGER,
+    unique: true,
+    autoIncrement: true,
+    primaryKey: true,
+  })
+  declare id: number;
 
-    @ApiProperty({ type: String })
-    @Column({ type: DataType.STRING, unique: true, allowNull: false })
-    email: string;
+  @ApiProperty({ type: String })
+  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  declare email: string;
 
-    @Column({ type: DataType.STRING, allowNull: false })
-    password: string;
+  @Column({ type: DataType.STRING, allowNull: false })
+  declare password: string;
 
-    @Column({ type: DataType.STRING, allowNull: false })
-    name: string;
+  @Column({ type: DataType.STRING, allowNull: false })
+  declare name: string;
 
-    @Column({ type: DataType.ENUM(...Object.values(Role)), defaultValue: Role.USER })
-    role: Role;
+  @Column({
+    type: DataType.ENUM(...Object.values(Role)),
+    defaultValue: Role.USER,
+  })
+  declare role: Role;
 
-    @Column({ type: DataType.STRING, allowNull: true })
-    country: string;
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare isEmailVerified: boolean;
 
-    @Column({ type: DataType.STRING, allowNull: true })
-    region: string;
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare emailVerificationTokenHash: string | null;
 
-    @Column({ type: DataType.STRING, allowNull: true })
-    district: string;
+  @Column({ type: DataType.DATE, allowNull: true })
+  declare emailVerificationTokenExpiresAt: Date | null;
 
-    @Column({ type: DataType.BOOLEAN, defaultValue: false })
-    isEstate: boolean;
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare refreshTokenHash: string | null;
 
-    @Column({ type: DataType.ENUM(...Object.values(EstateType)), allowNull: true })
-    estateType: EstateType;
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare country: string;
 
-    @Column({ type: DataType.STRING, allowNull: true })
-    settlement: string;
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare region: string;
 
-    @HasMany(() => Product)
-    products: Product[];
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare district: string;
 
-    @HasMany(() => Service)
-    services: Service[];
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare isEstate: boolean;
 
-    @HasMany(() => Job)
-    jobs: Job[];
+  @Column({
+    type: DataType.ENUM(...Object.values(EstateType)),
+    allowNull: true,
+  })
+  declare estateType: EstateType;
 
-    @HasMany(() => Resume)
-    resumes: Resume[];
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare settlement: string;
+
+  @HasMany(() => Product)
+  declare products: Product[];
+
+  @HasMany(() => Service)
+  declare services: Service[];
+
+  @HasMany(() => Job)
+  declare jobs: Job[];
+
+  @HasMany(() => Resume)
+  declare resumes: Resume[];
 }

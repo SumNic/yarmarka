@@ -1,8 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from 'joi/lib';
+import Joi from 'joi';
 import { JwtModule } from '@nestjs/jwt';
-import * as cookieParser from 'cookie-parser';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { RefreshTokenMiddleware } from 'src/common/middleware/refresh-token.middleware';
 import { User } from 'src/common/models/User.model';
@@ -10,50 +9,68 @@ import { Product } from 'src/common/models/Product.model';
 import { Service } from 'src/common/models/Service.model';
 import { Job } from 'src/common/models/Job.model';
 import { Resume } from 'src/common/models/Resume.model';
+import { UsersController } from './users/users.controller';
+import { UsersModule } from './users/users.module';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
+import cookieParser from 'cookie-parser';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            validationSchema: Joi.object({
-                PORT: Joi.number().required(),
-                CLIENT_URL: Joi.string().required(),
-                JWT_SECRET: Joi.string().required(),
-                JWT_REFRESH_SECRET: Joi.string().required(),
-                JWT_EXPIRATION: Joi.string().required(),
-                POSTGRES_URI: Joi.string().required(),
-                DOMEN: Joi.string().required(),
-            }),
-            envFilePath: '.env',
-        }),
-        JwtModule.registerAsync({
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: {
-                    expiresIn: `${configService.get('JWT_EXPIRATION')}s`,
-                },
-                configure(consumer: MiddlewareConsumer) {
-                    consumer.apply(cookieParser()).forRoutes('*');
-                },
-            }),
-            inject: [ConfigService],
-        }),
-        SequelizeModule.forRootAsync({
-            useFactory: (configService: ConfigService) => ({
-                uri: configService.get<string>('POSTGRES_URI'),
-                dialect: 'postgres',
-                models: [User, Product, Service, Job, Resume],
-                autoLoadModels: true,
-                synchronize: true,
-            }),
-            inject: [ConfigService],
-        }),
-    ],
-    controllers: [],
-    providers: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        PORT: Joi.number().required(),
+        CLIENT_URL: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
+        JWT_EXPIRATION: Joi.string().required(),
+        JWT_REFRESH_EXPIRATION: Joi.string().required(),
+        POSTGRES_URI: Joi.string().required(),
+        DOMEN: Joi.string().required(),
+        SMTP_HOST: Joi.string().required(),
+        SMTP_PORT: Joi.number().required(),
+        SMTP_USER: Joi.string().required(),
+        SMTP_PASS: Joi.string().required(),
+        SMTP_FROM: Joi.string().required(),
+        EMAIL_CONFIRM_TOKEN_EXPIRATION: Joi.string().required(),
+        COOKIE_SECURE: Joi.string().required(),
+      }),
+      envFilePath: '.env',
+    }),
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: `${configService.get('JWT_EXPIRATION')}s`,
+        },
+        configure(consumer: MiddlewareConsumer) {
+          consumer.apply(cookieParser()).forRoutes('*');
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    SequelizeModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('POSTGRES_URI'),
+        dialect: 'postgres',
+        models: [User, Product, Service, Job, Resume],
+        autoLoadModels: true,
+        synchronize: true,
+        sync: {
+          alter: true,
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    UsersModule,
+    AuthModule,
+  ],
+  controllers: [UsersController, AuthController],
+  providers: [],
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(cookieParser(), RefreshTokenMiddleware).forRoutes('*');
-    }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser(), RefreshTokenMiddleware).forRoutes('*');
+  }
 }
