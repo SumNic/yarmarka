@@ -17,6 +17,11 @@ import type { Request, Response } from 'express';
 import { JwtRefreshGuard } from 'src/auth/guards/jwt-refresh.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ResendConfirmationDto } from 'src/common/dto/resend-confirmation.dto';
+import { JwtPayload } from 'src/auth/guards/jwt.strategy';
+import { JwtRefreshPayload } from 'src/auth/guards/jwt-refresh.strategy';
+
+type RequestWithUser = Request & { user?: JwtPayload };
+type RequestWithRefreshUser = Request & { user?: JwtRefreshPayload };
 
 @Controller('auth')
 export class AuthController {
@@ -58,7 +63,6 @@ export class AuthController {
   ) {
     const result = await this.authService.login(dto);
     console.log(result, 'result');
-    
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
@@ -77,13 +81,13 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   async refresh(
-    @Req() req: Request,
+    @Req() req: RequestWithRefreshUser,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = (req as any).user;
+    const user = req.user;
     const refreshToken = user?.refreshToken;
 
-    const result = await this.authService.refresh(user.id, refreshToken);
+    const result = await this.authService.refresh(user!.id, refreshToken!);
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
@@ -99,10 +103,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout (удаляет refresh token)' })
   @UseGuards(JwtRefreshGuard)
   @Post('logout')
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const user = (req as any).user;
+  async logout(
+    @Req() req: RequestWithRefreshUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = req.user;
 
-    await this.authService.logout(user.id);
+    await this.authService.logout(user!.id);
 
     res.clearCookie('refreshToken', { path: '/auth' });
 
@@ -123,8 +130,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Текущий пользователь (по access token)' })
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  me(@Req() req: Request) {
-    return (req as any).user;
+  me(@Req() req: RequestWithUser) {
+    return req.user;
   }
 
   @ApiTags('Аутентификация')

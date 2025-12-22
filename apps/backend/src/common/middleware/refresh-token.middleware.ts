@@ -1,15 +1,20 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class RefreshTokenMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    // Пробуем сначала cookie
+    const headerToken = req.headers['x-refresh-token'];
+
     const refreshToken =
-      req.cookies?.refreshToken || req.headers['x-refresh-token']; // или кастомный заголовок
+      typeof req.cookies?.refreshToken === 'string'
+        ? req.cookies.refreshToken
+        : typeof headerToken === 'string'
+          ? headerToken
+          : undefined;
 
     if (refreshToken) {
-      req['refreshToken'] = refreshToken; // прокидываем в req
+      req.refreshToken = refreshToken;
     }
 
     next();

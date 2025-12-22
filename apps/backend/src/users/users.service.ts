@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User, UserCreationAttrs } from 'src/common/models/User.model';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +26,66 @@ export class UsersService {
       ...data,
       isEmailVerified: false,
     });
+  }
+
+  async findAll() {
+    return this.userRepo.findAll();
+  }
+
+  async findOne(id: number) {
+    const entity = await this.userRepo.findByPk(id);
+    if (!entity) throw new NotFoundException('User not found');
+    return entity;
+  }
+
+  async createCrud(dto: CreateUserDto) {
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+
+    const data: UserCreationAttrs = {
+      email: dto.email,
+      password: passwordHash,
+      name: dto.name,
+      role: dto.role,
+      isEmailVerified: dto.isEmailVerified ?? false,
+      country: dto.country,
+      region: dto.region,
+      district: dto.district,
+      isEstate: dto.isEstate,
+      estateType: dto.estateType,
+      settlement: dto.settlement,
+    };
+
+    return this.userRepo.create(data);
+  }
+
+  async updateCrud(id: number, dto: UpdateUserDto) {
+    const entity = await this.findOne(id);
+
+    const patch: Partial<UserCreationAttrs> = {
+      email: dto.email,
+      name: dto.name,
+      role: dto.role,
+      isEmailVerified: dto.isEmailVerified,
+      country: dto.country,
+      region: dto.region,
+      district: dto.district,
+      isEstate: dto.isEstate,
+      estateType: dto.estateType,
+      settlement: dto.settlement,
+    };
+
+    if (dto.password) {
+      patch.password = await bcrypt.hash(dto.password, 10);
+    }
+
+    await entity.update(patch as any);
+    return entity;
+  }
+
+  async removeCrud(id: number) {
+    const entity = await this.findOne(id);
+    await entity.destroy();
+    return { deleted: true };
   }
 
   async setEmailVerificationToken(

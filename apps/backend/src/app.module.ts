@@ -9,10 +9,12 @@ import { Product } from 'src/common/models/Product.model';
 import { Service } from 'src/common/models/Service.model';
 import { Job } from 'src/common/models/Job.model';
 import { Resume } from 'src/common/models/Resume.model';
-import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from 'src/products/products.module';
+import { ServicesModule } from 'src/services/services.module';
+import { JobsModule } from 'src/jobs/jobs.module';
+import { ResumesModule } from 'src/resumes/resumes.module';
 import cookieParser from 'cookie-parser';
 
 @Module({
@@ -65,8 +67,12 @@ import cookieParser from 'cookie-parser';
     }),
     UsersModule,
     AuthModule,
+    ProductsModule,
+    ServicesModule,
+    JobsModule,
+    ResumesModule,
   ],
-  controllers: [UsersController, AuthController],
+  controllers: [],
   providers: [],
 })
 export class AppModule implements NestModule {

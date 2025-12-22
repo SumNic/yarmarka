@@ -2,5 +2,12 @@
   "name": "rodovaya-yarmarka",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  
+  "scripts": {
+    "api:generate": "npx openapi-typescript http://localhost:5000/api/docs/api-json --output ./apps/frontend/src/utils/api.ts",
+    "api:watch": "chokidar \"./apps/backend/src/**/*.ts\" -c \"yarn api:generate\""
+  }
 }
+
+

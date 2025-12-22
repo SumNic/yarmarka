@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from 'src/common/filters/rpc-exception.filter';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,10 +32,14 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+  
+  // Swagger UI
   SwaggerModule.setup('/api/docs', app, document);
 
-  const fs = require('fs');
-  fs.writeFileSync('./swagger.json', JSON.stringify(document));
+  // JSON OpenAPI для генерации типов
+  app.getHttpAdapter().get('/api/docs/api-json', (req, res) => {
+    res.json(document);
+  });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
@@ -42,4 +47,4 @@ async function bootstrap() {
     console.log(`Server started on port = ${configService.get('PORT')}`),
   );
 }
-bootstrap();
+void bootstrap();

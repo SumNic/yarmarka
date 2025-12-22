@@ -38,7 +38,6 @@ export class AuthService {
       name: dto.name,
     });
     console.log(user.id, user.email, 'user.id, user.email');
-    
 
     await this.issueEmailConfirmation(user.id, user.email);
 
@@ -60,7 +59,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const { accessToken, refreshToken } = await this.generateTokens(user);
+    const { accessToken, refreshToken } = this.generateTokens(user);
     await this.usersService.setRefreshToken(user.id, refreshToken);
 
     return { access_token: accessToken, refresh_token: refreshToken };
@@ -81,7 +80,7 @@ export class AuthService {
     }
 
     const { accessToken, refreshToken: newRefreshToken } =
-      await this.generateTokens(user);
+      this.generateTokens(user);
     await this.usersService.setRefreshToken(user.id, newRefreshToken);
 
     return { access_token: accessToken, refresh_token: newRefreshToken };
@@ -104,8 +103,11 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('Invalid token');
     }
-    console.log(user?.emailVerificationTokenExpiresAt?.getTime(), Date.now(), 'user.emailVerificationTokenExpiresAt.getTime(), Date.now()');
-    
+    console.log(
+      user?.emailVerificationTokenExpiresAt?.getTime(),
+      Date.now(),
+      'user.emailVerificationTokenExpiresAt.getTime(), Date.now()',
+    );
 
     if (
       !user.emailVerificationTokenExpiresAt ||
@@ -162,7 +164,7 @@ export class AuthService {
     await this.mailService.sendEmailConfirmation(email, confirmUrl);
   }
 
-  private async generateTokens(user: any) {
+  private generateTokens(user: { id: number; email: string; role: string }) {
     const payload = {
       id: user.id,
       email: user.email,
