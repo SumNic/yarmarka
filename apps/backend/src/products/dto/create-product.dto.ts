@@ -1,10 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayMaxSize,
+  IsArray,
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   Min,
 } from 'class-validator';
 
@@ -32,6 +35,17 @@ export class CreateProductDto {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @ApiProperty({
+    example: ['https://storage.yandexcloud.net/bucket/products/xxx.jpg'],
+    required: false,
+    description: 'Ссылки на фото товара (до 10 шт.)',
+  })
+  @IsArray()
+  @ArrayMaxSize(10)
+  @IsUrl({}, { each: true })
+  @IsOptional()
+  photoUrls?: string[];
 
   @ApiProperty({ example: 1, description: 'ID пользователя-владельца' })
   @IsInt()

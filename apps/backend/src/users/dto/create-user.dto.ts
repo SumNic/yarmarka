@@ -5,9 +5,10 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  IsUrl,
   MinLength,
 } from 'class-validator';
-import { EstateType, Role } from 'src/common/models/User.model';
+import { EstateType } from 'src/common/models/User.model';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'you@mail.ru', description: 'Почта пользователя' })
@@ -25,16 +26,6 @@ export class CreateUserDto {
   @ApiProperty({ example: 'Иван', description: 'Имя пользователя' })
   @IsString()
   name: string;
-
-  @ApiProperty({
-    enum: Role,
-    example: Role.USER,
-    required: false,
-    description: 'Роль пользователя',
-  })
-  @IsEnum(Role)
-  @IsOptional()
-  role?: Role;
 
   @ApiProperty({
     example: false,
@@ -90,4 +81,13 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   settlement?: string;
+
+  @ApiProperty({
+    example: 'https://storage.yandexcloud.net/bucket/users/xxx.jpg',
+    required: false,
+    description: 'Фото/аватар (URL)',
+  })
+  @IsUrl()
+  @IsOptional()
+  photoUrl?: string;
 }

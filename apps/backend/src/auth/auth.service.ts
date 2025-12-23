@@ -13,6 +13,7 @@ import { LoginDto } from 'src/common/dto/login.dto';
 import { RegisterDto } from 'src/common/dto/register.dto';
 import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/common/services/mail.service';
+import { Role } from 'src/common/models/Role.model';
 
 @Injectable()
 export class AuthService {
@@ -164,11 +165,11 @@ export class AuthService {
     await this.mailService.sendEmailConfirmation(email, confirmUrl);
   }
 
-  private generateTokens(user: { id: number; email: string; role: string }) {
+  private generateTokens(user: { id: number; email: string; roles: Role[] }) {
     const payload = {
       id: user.id,
       email: user.email,
-      role: user.role,
+      role: user.roles,
     };
 
     const accessToken = this.jwtService.sign(payload);

@@ -3,13 +3,22 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Product } from 'src/common/models/Product.model';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
 import { UpdateProductDto } from 'src/products/dto/update-product.dto';
+import type { Actor } from 'src/common/auth/permissions';
+import { assertCanManageOwnedResource } from 'src/common/auth/permissions';
 
 @Injectable()
 export class ProductsService {
   constructor(@InjectModel(Product) private productRepo: typeof Product) {}
 
-  async create(dto: CreateProductDto) {
-    return this.productRepo.create(dto as any);
+  async create(userId: number, dto: CreateProductDto) {
+    const photoUrls = Array.isArray(dto.photoUrls)
+      ? dto.photoUrls.slice(0, 10)
+      : [];
+    return this.productRepo.create({
+      ...(dto as any),
+      userId,
+      photoUrls,
+    });
   }
 
   findAll() {
@@ -22,14 +31,39 @@ export class ProductsService {
     return entity;
   }
 
-  async update(id: number, dto: UpdateProductDto) {
+  async findOneForActor(actor: Actor, id: number) {
     const entity = await this.findOne(id);
-    await entity.update(dto as any);
+
+    assertCanManageOwnedResource({
+      actor,
+      ownerId: entity.userId,
+      errorMessage: 'Недостаточно прав',
+    });
+
     return entity;
   }
 
-  async remove(id: number) {
-    const entity = await this.findOne(id);
+  async update(actor: Actor, id: number, dto: UpdateProductDto) {
+    const entity = await this.findOneForActor(actor, id);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const patch: any = { ...(dto as any) };
+
+    if (dto.photoUrls) {
+      const normalizedPhotoUrls = Array.isArray(dto.photoUrls)
+        ? dto.photoUrls.slice(0, 10)
+        : [];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      patch.photoUrls = normalizedPhotoUrls;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await entity.update(patch);
+    return entity;
+  }
+
+  async remove(actor: Actor, id: number) {
+    const entity = await this.findOneForActor(actor, id);
     await entity.destroy();
     return { deleted: true };
   }

@@ -3,13 +3,18 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Job } from 'src/common/models/Job.model';
 import { CreateJobDto } from 'src/jobs/dto/create-job.dto';
 import { UpdateJobDto } from 'src/jobs/dto/update-job.dto';
+import type { Actor } from 'src/common/auth/permissions';
+import { assertCanManageOwnedResource } from 'src/common/auth/permissions';
 
 @Injectable()
 export class JobsService {
   constructor(@InjectModel(Job) private jobRepo: typeof Job) {}
 
-  async create(dto: CreateJobDto) {
-    return this.jobRepo.create(dto as any);
+  async create(userId: number, dto: CreateJobDto) {
+    return this.jobRepo.create({
+      ...(dto as any),
+      userId,
+    });
   }
 
   findAll() {
@@ -22,14 +27,26 @@ export class JobsService {
     return entity;
   }
 
-  async update(id: number, dto: UpdateJobDto) {
+  async findOneForActor(actor: Actor, id: number) {
     const entity = await this.findOne(id);
+
+    assertCanManageOwnedResource({
+      actor,
+      ownerId: entity.userId,
+      errorMessage: 'Недостаточно прав',
+    });
+
+    return entity;
+  }
+
+  async update(actor: Actor, id: number, dto: UpdateJobDto) {
+    const entity = await this.findOneForActor(actor, id);
     await entity.update(dto as any);
     return entity;
   }
 
-  async remove(id: number) {
-    const entity = await this.findOne(id);
+  async remove(actor: Actor, id: number) {
+    const entity = await this.findOneForActor(actor, id);
     await entity.destroy();
     return { deleted: true };
   }

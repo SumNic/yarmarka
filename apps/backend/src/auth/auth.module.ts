@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -13,7 +13,7 @@ import cookieParser from 'cookie-parser';
 @Module({
   exports: [AuthService],
   imports: [
-    UsersModule,
+    // UsersModule,
     PassportModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
@@ -27,6 +27,7 @@ import cookieParser from 'cookie-parser';
       }),
       inject: [ConfigService],
     }),
+    forwardRef(() => UsersModule),
   ],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy, MailService],
   controllers: [AuthController],

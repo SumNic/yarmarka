@@ -23,11 +23,11 @@ import { JwtRefreshPayload } from 'src/auth/guards/jwt-refresh.strategy';
 type RequestWithUser = Request & { user?: JwtPayload };
 type RequestWithRefreshUser = Request & { user?: JwtRefreshPayload };
 
+@ApiTags('Аутентификация')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiTags('Аутентификация')
   @ApiOperation({ summary: 'Регистрация пользователя' })
   @ApiBody({ type: RegisterDto })
   @ApiResponse({
@@ -44,7 +44,6 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
-  @ApiTags('Аутентификация')
   @ApiOperation({ summary: 'Авторизация пользователя' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
@@ -74,7 +73,6 @@ export class AuthController {
     return { access_token: result.access_token };
   }
 
-  @ApiTags('Аутентификация')
   @ApiOperation({
     summary: 'Обновление access_token по refreshToken cookie (rotation)',
   })
@@ -99,7 +97,6 @@ export class AuthController {
     return { access_token: result.access_token };
   }
 
-  @ApiTags('Аутентификация')
   @ApiOperation({ summary: 'Logout (удаляет refresh token)' })
   @UseGuards(JwtRefreshGuard)
   @Post('logout')
@@ -116,7 +113,6 @@ export class AuthController {
     return { status: 'ok' };
   }
 
-  @ApiTags('Аутентификация')
   @ApiOperation({ summary: 'Подтверждение email' })
   @Get('confirm-email')
   async confirmEmail(@Query('token') token: string, @Res() res: Response) {
@@ -126,7 +122,6 @@ export class AuthController {
     return res.redirect(302, redirectUrl);
   }
 
-  @ApiTags('Аутентификация')
   @ApiOperation({ summary: 'Текущий пользователь (по access token)' })
   @UseGuards(JwtAuthGuard)
   @Get('me')
@@ -134,7 +129,6 @@ export class AuthController {
     return req.user;
   }
 
-  @ApiTags('Аутентификация')
   @ApiOperation({ summary: 'Повторная отправка письма подтверждения' })
   @Post('resend-confirmation')
   resendConfirmation(@Body() dto: ResendConfirmationDto) {

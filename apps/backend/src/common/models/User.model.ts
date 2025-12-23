@@ -1,14 +1,17 @@
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, HasMany, BelongsToMany } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { Product } from 'src/common/models/Product.model';
 import { Job } from 'src/common/models/Job.model';
 import { Resume } from 'src/common/models/Resume.model';
 import { Service } from 'src/common/models/Service.model';
+import { UserRoles } from 'src/common/models/User-roles.model';
+import { Role } from 'src/common/models/Role.model';
 
-export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
+// export enum Role {
+//   ADMIN = 'ADMIN',
+//   MODERATOR = 'MODERATOR',
+//   USER = 'USER',
+// }
 
 export enum EstateType {
   INDIVIDUAL = 'INDIVIDUAL',
@@ -19,12 +22,13 @@ export interface UserCreationAttrs {
   email: string;
   password: string;
   name: string;
-  role?: Role;
+  // role?: Role;
 
   isEmailVerified?: boolean;
   emailVerificationTokenHash?: string;
   emailVerificationTokenExpiresAt?: Date;
   refreshTokenHash?: string;
+  photoUrl?: string;
 
   country?: string;
   region?: string;
@@ -55,11 +59,11 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   declare name: string;
 
-  @Column({
-    type: DataType.ENUM(...Object.values(Role)),
-    defaultValue: Role.USER,
-  })
-  declare role: Role;
+  // @Column({
+  //   type: DataType.ENUM(...Object.values(Role)),
+  //   defaultValue: Role.USER,
+  // })
+  // declare role: Role;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare isEmailVerified: boolean;
@@ -72,6 +76,14 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare refreshTokenHash: string | null;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'Фото/аватар (URL)',
+  })
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare photoUrl: string | null;
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare country: string;
@@ -105,4 +117,8 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Resume)
   declare resumes: Resume[];
+
+  @ApiProperty({ type: () => [Role] })
+  @BelongsToMany(() => Role, () => UserRoles)
+  declare roles: Role[];
 }

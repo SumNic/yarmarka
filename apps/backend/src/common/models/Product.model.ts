@@ -13,6 +13,7 @@ interface ProductCreationAttrs {
   description?: string;
   price: number;
   category?: string;
+  photoUrls?: string[];
   userId: number;
 }
 
@@ -37,6 +38,13 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare category: string;
+
+  @Column({
+    type: DataType.ARRAY(DataType.STRING),
+    allowNull: false,
+    defaultValue: [],
+  })
+  declare photoUrls: string[];
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })

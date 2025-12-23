@@ -22,6 +22,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Загрузить фото/аватар пользователя */
+        post: operations["UsersController_uploadUserPhoto"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/{id}": {
         parameters: {
             query?: never;
@@ -39,6 +56,74 @@ export interface paths {
         head?: never;
         /** Обновить пользователя */
         patch: operations["UsersController_update"];
+        trace?: never;
+    };
+    "/users/add-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Добавить роль пользователю */
+        post: operations["UsersController_userAddRole"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/remove-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить роль у пользователя */
+        delete: operations["UsersController_userRemoveRole"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roles/get-all-roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список ролей */
+        get: operations["RolesController_getAllRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roles/create-new-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Создать новую роль */
+        post: operations["RolesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/auth/register": {
@@ -172,6 +257,23 @@ export interface paths {
         put?: never;
         /** Создание товара */
         post: operations["ProductsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/products/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Загрузить фото товара (до 10 шт.) */
+        post: operations["ProductsController_uploadProductPhotos"];
         delete?: never;
         options?: never;
         head?: never;
@@ -329,12 +431,6 @@ export interface components {
              */
             name: string;
             /**
-             * @description Роль пользователя
-             * @example USER
-             * @enum {string}
-             */
-            role?: "ADMIN" | "USER";
-            /**
              * @description Признак подтверждения email
              * @example false
              */
@@ -369,6 +465,17 @@ export interface components {
              * @example Родовое поселение "Солнечное"
              */
             settlement?: string;
+            /**
+             * @description Фото/аватар (URL)
+             * @example https://storage.yandexcloud.net/bucket/users/xxx.jpg
+             */
+            photoUrl?: string;
+        };
+        UploadResultDto: {
+            /** @example users/uuid.jpg */
+            key: string;
+            /** @example https://storage.yandexcloud.net/bucket/users/uuid.jpg */
+            url: string;
         };
         UpdateUserDto: {
             /**
@@ -387,12 +494,6 @@ export interface components {
              */
             name?: string;
             /**
-             * @description Роль пользователя
-             * @example USER
-             * @enum {string}
-             */
-            role?: "ADMIN" | "USER";
-            /**
              * @description Признак подтверждения email
              * @example false
              */
@@ -427,6 +528,30 @@ export interface components {
              * @example Родовое поселение "Солнечное"
              */
             settlement?: string;
+            /**
+             * @description Фото/аватар (URL)
+             * @example https://storage.yandexcloud.net/bucket/users/xxx.jpg
+             */
+            photoUrl?: string;
+        };
+        AddRoleDto: {
+            /**
+             * @description Название существующей роли
+             * @example admin
+             */
+            value: string;
+            /**
+             * @description Идентификатор пользователя
+             * @example 1
+             */
+            userId: number;
+        };
+        CreateRoleDto: {
+            /**
+             * @description Название существующей роли
+             * @example admin
+             */
+            value: string;
         };
         RegisterDto: {
             /**
@@ -482,6 +607,13 @@ export interface components {
              */
             category?: string;
             /**
+             * @description Ссылки на фото товара (до 10 шт.)
+             * @example [
+             *       "https://storage.yandexcloud.net/bucket/products/xxx.jpg"
+             *     ]
+             */
+            photoUrls?: string[];
+            /**
              * @description ID пользователя-владельца
              * @example 1
              */
@@ -508,6 +640,13 @@ export interface components {
              * @example Еда
              */
             category?: string;
+            /**
+             * @description Ссылки на фото товара (до 10 шт.)
+             * @example [
+             *       "https://storage.yandexcloud.net/bucket/products/xxx.jpg"
+             *     ]
+             */
+            photoUrls?: string[];
             /**
              * @description ID пользователя-владельца
              * @example 1
@@ -725,6 +864,34 @@ export interface operations {
             };
         };
     };
+    UsersController_uploadUserPhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadResultDto"];
+                };
+            };
+        };
+    };
     UsersController_findOne: {
         parameters: {
             query?: never;
@@ -789,6 +956,118 @@ export interface operations {
         responses: {
             /** @description Пользователь обновлён */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_userAddRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddRoleDto"];
+            };
+        };
+        responses: {
+            /** @description Операция прошла успешно. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description JWT токен не указан в заголовках */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Некоректный JWT токен или роль пользователя */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_userRemoveRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddRoleDto"];
+            };
+        };
+        responses: {
+            /** @description Операция прошла успешно. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description JWT токен не указан в заголовках */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Некоректный JWT токен или роль пользователя */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RolesController_getAllRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Операция прошла успешно. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RolesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRoleDto"];
+            };
+        };
+        responses: {
+            /** @description Операция прошла успешно. */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -986,6 +1265,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ProductsController_uploadProductPhotos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadResultDto"][];
+                };
             };
         };
     };

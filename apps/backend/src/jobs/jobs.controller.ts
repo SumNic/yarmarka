@@ -8,6 +8,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -19,21 +21,26 @@ import {
 import { JobsService } from 'src/jobs/jobs.service';
 import { CreateJobDto } from 'src/jobs/dto/create-job.dto';
 import { UpdateJobDto } from 'src/jobs/dto/update-job.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import type { Request } from 'express';
+import { JwtPayload } from 'src/auth/guards/jwt.strategy';
 
+type RequestWithUser = Request & { user?: JwtPayload };
+
+@ApiTags('Вакансии')
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
-  @ApiTags('Вакансии')
   @ApiOperation({ summary: 'Создание вакансии' })
   @ApiBody({ type: CreateJobDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Вакансия создана' })
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() dto: CreateJobDto) {
-    return this.jobsService.create(dto);
+  create(@Req() req: RequestWithUser, @Body() dto: CreateJobDto) {
+    return this.jobsService.create(req.user!.id, dto);
   }
 
-  @ApiTags('Вакансии')
   @ApiOperation({ summary: 'Список вакансий' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Список вакансий' })
   @Get()
@@ -41,7 +48,6 @@ export class JobsController {
     return this.jobsService.findAll();
   }
 
-  @ApiTags('Вакансии')
   @ApiOperation({ summary: 'Получить вакансию по id' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: HttpStatus.OK, description: 'Вакансия' })
@@ -54,22 +60,26 @@ export class JobsController {
     return this.jobsService.findOne(id);
   }
 
-  @ApiTags('Вакансии')
   @ApiOperation({ summary: 'Обновить вакансию' })
   @ApiParam({ name: 'id', type: Number })
   @ApiBody({ type: UpdateJobDto })
   @ApiResponse({ status: HttpStatus.OK, description: 'Вакансия обновлена' })
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateJobDto) {
-    return this.jobsService.update(id, dto);
+  update(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateJobDto,
+  ) {
+    return this.jobsService.update(req.user!, id, dto);
   }
 
-  @ApiTags('Вакансии')
   @ApiOperation({ summary: 'Удалить вакансию' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: HttpStatus.OK, description: 'Вакансия удалена' })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.jobsService.remove(id);
+  remove(@Req() req: RequestWithUser, @Param('id', ParseIntPipe) id: number) {
+    return this.jobsService.remove(req.user!, id);
   }
 }

@@ -1,16 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User, UserCreationAttrs } from 'src/common/models/User.model';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import type { Actor } from 'src/common/auth/permissions';
+import {
+  assertCanManageOwnedResource,
+} from 'src/common/auth/permissions';
+import { RolesService } from 'src/roles/roles.service';
+import { ROLES } from 'src/common/constants/roles';
+import { AddRoleDto } from 'src/users/dto/add-role.dto';
+import { Role } from 'src/common/models/Role.model';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepo: typeof User) {}
+  constructor(
+    @InjectModel(User) private userRepo: typeof User,
+    private roleService: RolesService,
+  ) {}
 
   findByEmail(email: string) {
-    return this.userRepo.findOne({ where: { email } });
+    return this.userRepo.findOne({ where: { email }, include: [{ model: Role }] });
   }
 
   findById(id: number) {
@@ -45,8 +61,8 @@ export class UsersService {
       email: dto.email,
       password: passwordHash,
       name: dto.name,
-      role: dto.role,
       isEmailVerified: dto.isEmailVerified ?? false,
+      photoUrl: dto.photoUrl,
       country: dto.country,
       region: dto.region,
       district: dto.district,
@@ -55,17 +71,34 @@ export class UsersService {
       settlement: dto.settlement,
     };
 
-    return this.userRepo.create(data);
+    const user = await this.userRepo.create(data);
+
+    let role = await this.roleService.getRoleByValue(ROLES.USER);
+
+    if (!role) {
+      role = await this.roleService.create({ value: ROLES.USER });
+    }
+
+    await user.$set('roles', [role.id]);
+    user.roles = [role];
+
+    return user;
   }
 
-  async updateCrud(id: number, dto: UpdateUserDto) {
+  async updateCrud(actor: Actor, id: number, dto: UpdateUserDto) {
     const entity = await this.findOne(id);
+
+    assertCanManageOwnedResource({
+      actor,
+      ownerId: entity.id,
+      errorMessage: 'Недостаточно прав',
+    });
 
     const patch: Partial<UserCreationAttrs> = {
       email: dto.email,
       name: dto.name,
-      role: dto.role,
       isEmailVerified: dto.isEmailVerified,
+      photoUrl: dto.photoUrl,
       country: dto.country,
       region: dto.region,
       district: dto.district,
@@ -82,8 +115,15 @@ export class UsersService {
     return entity;
   }
 
-  async removeCrud(id: number) {
+  async removeCrud(actor: Actor, id: number) {
     const entity = await this.findOne(id);
+
+    assertCanManageOwnedResource({
+      actor,
+      ownerId: entity.id,
+      errorMessage: 'Недостаточно прав',
+    });
+
     await entity.destroy();
     return { deleted: true };
   }
@@ -125,6 +165,36 @@ export class UsersService {
     await this.userRepo.update(
       { refreshTokenHash: null },
       { where: { id: userId } },
+    );
+  }
+
+  async addRole(dto: AddRoleDto): Promise<AddRoleDto> {
+    const user = await this.findOne(dto.userId);
+    const role = await this.roleService.getRoleByValue(dto.value);
+
+    if (role && user) {
+      await user.$add('role', role.id);
+      return dto;
+    }
+
+    throw new HttpException(
+      'Пользователь или роль не найдены',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  async removeRole(dto: AddRoleDto): Promise<AddRoleDto> {
+    const user = await this.findOne(dto.userId);
+    const role = await this.roleService.getRoleByValue(dto.value);
+
+    if (role && user) {
+      await user.$remove('role', role.id);
+      return dto;
+    }
+
+    throw new HttpException(
+      'Пользователь или роль не найдены',
+      HttpStatus.BAD_REQUEST,
     );
   }
 }
