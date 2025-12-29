@@ -77,6 +77,12 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: true })
   declare refreshTokenHash: string | null;
 
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare passwordResetTokenHash: string | null;
+
+  @Column({ type: DataType.DATE, allowNull: true })
+  declare passwordResetTokenExpiresAt: Date | null;
+
   @ApiProperty({
     type: String,
     required: false,

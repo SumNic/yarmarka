@@ -9,6 +9,10 @@ import { HttpExceptionFilter } from 'src/common/filters/rpc-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // 🔹 Глобальный префикс
+  app.setGlobalPrefix('api');
+  
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Родная Ярмарка')
     .setDescription('Документация REST API')

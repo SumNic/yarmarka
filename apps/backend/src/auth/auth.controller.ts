@@ -17,6 +17,9 @@ import type { Request, Response } from 'express';
 import { JwtRefreshGuard } from 'src/auth/guards/jwt-refresh.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ResendConfirmationDto } from 'src/common/dto/resend-confirmation.dto';
+import { ChangePasswordDto } from 'src/common/dto/change-password.dto';
+import { RequestPasswordResetDto } from 'src/common/dto/request-password-reset.dto';
+import { ConfirmPasswordResetDto } from 'src/common/dto/confirm-password-reset.dto';
 import { JwtPayload } from 'src/auth/guards/jwt.strategy';
 import { JwtRefreshPayload } from 'src/auth/guards/jwt-refresh.strategy';
 
@@ -61,13 +64,12 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(dto);
-    console.log(result, 'result');
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
       sameSite: 'lax',
       secure: this.authService.isCookieSecure(),
-      path: '/auth',
+      path: '/',
     });
 
     return { access_token: result.access_token };
@@ -91,7 +93,7 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'lax',
       secure: this.authService.isCookieSecure(),
-      path: '/auth',
+      path: '/',
     });
 
     return { access_token: result.access_token };
@@ -108,7 +110,7 @@ export class AuthController {
 
     await this.authService.logout(user!.id);
 
-    res.clearCookie('refreshToken', { path: '/auth' });
+    res.clearCookie('refreshToken', { path: '/' });
 
     return { status: 'ok' };
   }
@@ -133,5 +135,24 @@ export class AuthController {
   @Post('resend-confirmation')
   resendConfirmation(@Body() dto: ResendConfirmationDto) {
     return this.authService.resendConfirmation(dto.email);
+  }
+
+  @ApiOperation({ summary: 'Смена пароля (по access token)' })
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  changePassword(@Req() req: RequestWithUser, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(req.user!.id, dto);
+  }
+
+  @ApiOperation({ summary: 'Запрос на восстановление пароля (письмо со ссылкой)' })
+  @Post('request-password-reset')
+  requestPasswordReset(@Body() dto: RequestPasswordResetDto) {
+    return this.authService.requestPasswordReset(dto);
+  }
+
+  @ApiOperation({ summary: 'Подтверждение восстановления пароля (сброс пароля по токену)' })
+  @Post('confirm-password-reset')
+  confirmPasswordReset(@Body() dto: ConfirmPasswordResetDto) {
+    return this.authService.confirmPasswordReset(dto);
   }
 }

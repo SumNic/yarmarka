@@ -39,6 +39,7 @@ import { Role } from 'src/common/models/Role.model';
         SMTP_PASS: Joi.string().required(),
         SMTP_FROM: Joi.string().required(),
         EMAIL_CONFIRM_TOKEN_EXPIRATION: Joi.string().required(),
+        PASSWORD_RESET_TOKEN_EXPIRATION: Joi.string().required(),
         COOKIE_SECURE: Joi.string().required(),
 
         S3_ENDPOINT: Joi.string().required(),

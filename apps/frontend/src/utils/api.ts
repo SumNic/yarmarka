@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/users": {
+    "/api/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -22,7 +22,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/photo": {
+    "/api/users/{id}/photo": {
         parameters: {
             query?: never;
             header?: never;
@@ -39,7 +39,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}": {
+    "/api/users/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -58,7 +58,7 @@ export interface paths {
         patch: operations["UsersController_update"];
         trace?: never;
     };
-    "/users/add-role": {
+    "/api/users/add-role": {
         parameters: {
             query?: never;
             header?: never;
@@ -75,7 +75,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/remove-role": {
+    "/api/users/remove-role": {
         parameters: {
             query?: never;
             header?: never;
@@ -92,7 +92,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/roles/get-all-roles": {
+    "/api/roles/get-all-roles": {
         parameters: {
             query?: never;
             header?: never;
@@ -109,7 +109,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/roles/create-new-role": {
+    "/api/roles/create-new-role": {
         parameters: {
             query?: never;
             header?: never;
@@ -126,7 +126,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/register": {
+    "/api/auth/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -143,7 +143,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/login": {
+    "/api/auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -160,7 +160,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/refresh": {
+    "/api/auth/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -177,7 +177,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/logout": {
+    "/api/auth/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -194,7 +194,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/confirm-email": {
+    "/api/auth/confirm-email": {
         parameters: {
             query?: never;
             header?: never;
@@ -211,7 +211,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/me": {
+    "/api/auth/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -228,7 +228,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/resend-confirmation": {
+    "/api/auth/resend-confirmation": {
         parameters: {
             query?: never;
             header?: never;
@@ -245,7 +245,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products": {
+    "/api/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Смена пароля (по access token) */
+        post: operations["AuthController_changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/request-password-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Запрос на восстановление пароля (письмо со ссылкой) */
+        post: operations["AuthController_requestPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/confirm-password-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Подтверждение восстановления пароля (сброс пароля по токену) */
+        post: operations["AuthController_confirmPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products": {
         parameters: {
             query?: never;
             header?: never;
@@ -263,7 +314,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}/photos": {
+    "/api/products/{id}/photos": {
         parameters: {
             query?: never;
             header?: never;
@@ -280,7 +331,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}": {
+    "/api/products/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -299,7 +350,7 @@ export interface paths {
         patch: operations["ProductsController_update"];
         trace?: never;
     };
-    "/services": {
+    "/api/services": {
         parameters: {
             query?: never;
             header?: never;
@@ -317,7 +368,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/services/{id}": {
+    "/api/services/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -336,7 +387,7 @@ export interface paths {
         patch: operations["ServicesController_update"];
         trace?: never;
     };
-    "/jobs": {
+    "/api/jobs": {
         parameters: {
             query?: never;
             header?: never;
@@ -354,7 +405,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/jobs/{id}": {
+    "/api/jobs/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -373,7 +424,7 @@ export interface paths {
         patch: operations["JobsController_update"];
         trace?: never;
     };
-    "/resumes": {
+    "/api/resumes": {
         parameters: {
             query?: never;
             header?: never;
@@ -391,7 +442,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/resumes/{id}": {
+    "/api/resumes/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -584,6 +635,17 @@ export interface components {
         };
         ResendConfirmationDto: {
             email: string;
+        };
+        ChangePasswordDto: {
+            currentPassword: string;
+            newPassword: string;
+        };
+        RequestPasswordResetDto: {
+            email: string;
+        };
+        ConfirmPasswordResetDto: {
+            token: string;
+            newPassword: string;
         };
         CreateProductDto: {
             /**
@@ -1217,6 +1279,69 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ResendConfirmationDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_requestPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestPasswordResetDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_confirmPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPasswordResetDto"];
             };
         };
         responses: {

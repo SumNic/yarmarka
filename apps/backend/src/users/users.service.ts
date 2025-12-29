@@ -168,6 +168,31 @@ export class UsersService {
     );
   }
 
+  async setPasswordResetToken(
+    userId: number,
+    tokenHash: string,
+    expiresAt: Date,
+  ) {
+    await this.userRepo.update(
+      {
+        passwordResetTokenHash: tokenHash,
+        passwordResetTokenExpiresAt: expiresAt,
+      },
+      { where: { id: userId } },
+    );
+  }
+
+  async clearPasswordResetToken(userId: number) {
+    await this.userRepo.update(
+      { passwordResetTokenHash: null, passwordResetTokenExpiresAt: null },
+      { where: { id: userId } },
+    );
+  }
+
+  findByPasswordResetTokenHash(passwordResetTokenHash: string) {
+    return this.userRepo.findOne({ where: { passwordResetTokenHash } });
+  }
+
   async addRole(dto: AddRoleDto): Promise<AddRoleDto> {
     const user = await this.findOne(dto.userId);
     const role = await this.roleService.getRoleByValue(dto.value);

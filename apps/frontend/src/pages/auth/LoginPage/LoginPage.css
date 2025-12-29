@@ -1,0 +1,9 @@
+.loginPage {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.loginPage__card {
+  width: min(420px, 100%);
+}

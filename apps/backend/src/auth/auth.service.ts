@@ -11,6 +11,9 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { LoginDto } from 'src/common/dto/login.dto';
 import { RegisterDto } from 'src/common/dto/register.dto';
+import { ChangePasswordDto } from 'src/common/dto/change-password.dto';
+import { RequestPasswordResetDto } from 'src/common/dto/request-password-reset.dto';
+import { ConfirmPasswordResetDto } from 'src/common/dto/confirm-password-reset.dto';
 import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/common/services/mail.service';
 import { Role } from 'src/common/models/Role.model';
@@ -26,9 +29,13 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const candidate = await this.usersService.findByEmail(dto.email);
+    console.log(candidate, 'candidate');
+    
     if (candidate) {
-      await this.issueEmailConfirmation(candidate.id, candidate.email);
-      throw new ConflictException('Email already registered');
+      // await this.issueEmailConfirmation(candidate.id, candidate.email);
+      throw new ConflictException(
+        'Этот адрес электронной почты уже зарегистрирован',
+      );
     }
 
     const hash = await bcrypt.hash(dto.password, 10);
@@ -38,7 +45,6 @@ export class AuthService {
       password: hash,
       name: dto.name,
     });
-    console.log(user.id, user.email, 'user.id, user.email');
 
     await this.issueEmailConfirmation(user.id, user.email);
 
@@ -48,16 +54,20 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(
+        'Неверный адрес электронной почты или пароль',
+      );
     }
 
     if (!user.isEmailVerified) {
-      throw new ForbiddenException('Email not verified');
+      throw new ForbiddenException('Адрес электронной почты не подтвержден');
     }
 
     const passwordEquals = await bcrypt.compare(dto.password, user.password);
     if (!passwordEquals) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(
+        'Неверный адрес электронной почты или пароль',
+      );
     }
 
     const { accessToken, refreshToken } = this.generateTokens(user);
@@ -69,7 +79,7 @@ export class AuthService {
   async refresh(userId: number, refreshToken: string) {
     const user = await this.usersService.findById(userId);
     if (!user || !user.refreshTokenHash) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Недействительный токен');
     }
 
     const refreshEquals = await bcrypt.compare(
@@ -77,7 +87,7 @@ export class AuthService {
       user.refreshTokenHash,
     );
     if (!refreshEquals) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Недействительный токен');
     }
 
     const { accessToken, refreshToken: newRefreshToken } =
@@ -94,7 +104,7 @@ export class AuthService {
 
   async confirmEmail(token: string) {
     if (!token) {
-      throw new BadRequestException('Token is required');
+      throw new BadRequestException('Требуется токен');
     }
 
     const tokenHash = this.sha256(token);
@@ -102,19 +112,14 @@ export class AuthService {
       await this.usersService.findByEmailVerificationTokenHash(tokenHash);
 
     if (!user) {
-      throw new BadRequestException('Invalid token');
+      throw new BadRequestException('Недействительный токен');
     }
-    console.log(
-      user?.emailVerificationTokenExpiresAt?.getTime(),
-      Date.now(),
-      'user.emailVerificationTokenExpiresAt.getTime(), Date.now()',
-    );
 
     if (
       !user.emailVerificationTokenExpiresAt ||
       user.emailVerificationTokenExpiresAt.getTime() < Date.now()
     ) {
-      throw new BadRequestException('Token expired');
+      throw new BadRequestException('Срок действия токена истек');
     }
 
     await this.usersService.markEmailVerified(user.id);
@@ -138,6 +143,85 @@ export class AuthService {
     return { status: 'ok' };
   }
 
+  async changePassword(userId: number, dto: ChangePasswordDto) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('Пользователь не найден');
+    }
+
+    const passwordEquals = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!passwordEquals) {
+      throw new BadRequestException('Текущий пароль указан неверно');
+    }
+
+    const hash = await bcrypt.hash(dto.newPassword, 10);
+    await user.update({ password: hash } as any);
+
+    // На всякий случай инвалидируем refresh-token при смене пароля
+    await this.usersService.clearRefreshToken(user.id);
+
+    return { status: 'ok' };
+  }
+
+  async requestPasswordReset(dto: RequestPasswordResetDto) {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) {
+      // не палим существование email
+      return { status: 'ok' };
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = this.sha256(rawToken);
+
+    const ttlSeconds = Number(
+      this.configService.get<string>('PASSWORD_RESET_TOKEN_EXPIRATION'),
+    );
+    if (!ttlSeconds || Number.isNaN(ttlSeconds)) {
+      throw new Error(
+        `Срок действия токена восстановления пароля (PASSWORD_RESET_TOKEN_EXPIRATION) должен быть числом (в секундах)`,
+      );
+    }
+
+    const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
+
+    await this.usersService.setPasswordResetToken(user.id, tokenHash, expiresAt);
+
+    const domen = this.configService.get<string>('DOMEN');
+    const resetUrl = `${domen}/auth/reset-password?token=${rawToken}`;
+
+    await this.mailService.sendPasswordReset(user.email, resetUrl);
+
+    return { status: 'ok' };
+  }
+
+  async confirmPasswordReset(dto: ConfirmPasswordResetDto) {
+    if (!dto.token) {
+      throw new BadRequestException('Требуется токен');
+    }
+
+    const tokenHash = this.sha256(dto.token);
+    const user = await this.usersService.findByPasswordResetTokenHash(tokenHash);
+
+    if (!user) {
+      throw new BadRequestException('Недействительный токен');
+    }
+
+    if (
+      !user.passwordResetTokenExpiresAt ||
+      user.passwordResetTokenExpiresAt.getTime() < Date.now()
+    ) {
+      throw new BadRequestException('Срок действия токена истек');
+    }
+
+    const hash = await bcrypt.hash(dto.newPassword, 10);
+    await user.update({ password: hash } as any);
+
+    await this.usersService.clearPasswordResetToken(user.id);
+    await this.usersService.clearRefreshToken(user.id);
+
+    return { status: 'ok' };
+  }
+
   private async issueEmailConfirmation(userId: number, email: string) {
     const rawToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = this.sha256(rawToken);
@@ -147,7 +231,7 @@ export class AuthService {
     );
     if (!ttlSeconds || Number.isNaN(ttlSeconds)) {
       throw new Error(
-        `EMAIL_CONFIRM_TOKEN_EXPIRATION must be a ${ttlSeconds} (seconds)`,
+        `Срок действия токена подтверждения электронной почты (EMAIL_CONFIRM_TOKEN_EXPIRATION) должен составлять ${ttlSeconds} секунд`,
       );
     }
 
@@ -160,7 +244,7 @@ export class AuthService {
     );
 
     const domen = this.configService.get<string>('DOMEN');
-    const confirmUrl = `${domen}/auth/confirm-email?token=${rawToken}`;
+    const confirmUrl = `${domen}/api/auth/confirm-email?token=${rawToken}`;
 
     await this.mailService.sendEmailConfirmation(email, confirmUrl);
   }
@@ -179,10 +263,12 @@ export class AuthService {
       this.configService.get<string>('JWT_REFRESH_EXPIRATION'),
     );
     if (!refreshSecret) {
-      throw new Error('JWT_REFRESH_SECRET is not set');
+      throw new Error('Переменная JWT_REFRESH_SECRET не установлена');
     }
     if (!refreshTtlSeconds || Number.isNaN(refreshTtlSeconds)) {
-      throw new Error('JWT_REFRESH_EXPIRATION must be a number (seconds)');
+      throw new Error(
+        'Параметр JWT_REFRESH_EXPIRATION должен быть числом (в секундах)',
+      );
     }
 
     const refreshToken = this.jwtService.sign(payload, {

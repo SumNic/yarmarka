@@ -1,0 +1,38 @@
+.appLayout {
+  min-height: 100vh;
+}
+
+.appLayout__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.appLayout__brand {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+}
+
+.appLayout__brandText {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.appLayout__menu {
+  flex: 1;
+  min-width: 0;
+}
+
+.appLayout__content {
+  padding: 24px;
+}
+
+.appLayout__footer {
+  text-align: center;
+}

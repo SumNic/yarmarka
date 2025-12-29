@@ -35,4 +35,16 @@ export class MailService {
 
     this.logger.log(`Email confirmation sent to ${to}`);
   }
+
+  async sendPasswordReset(to: string, resetUrl: string) {
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: 'Восстановление пароля',
+      text: `Для сброса пароля перейдите по ссылке: ${resetUrl}`,
+      html: `Для сброса пароля перейдите по ссылке: <a href="${resetUrl}">${resetUrl}</a>`,
+    });
+
+    this.logger.log(`Password reset email sent to ${to}`);
+  }
 }
