@@ -30,7 +30,7 @@ export class AuthService {
   async register(dto: RegisterDto) {
     const candidate = await this.usersService.findByEmail(dto.email);
     console.log(candidate, 'candidate');
-    
+
     if (candidate) {
       // await this.issueEmailConfirmation(candidate.id, candidate.email);
       throw new ConflictException(
@@ -127,6 +127,10 @@ export class AuthService {
     return { status: 'ok' };
   }
 
+  async me(userId: number) {
+    return await this.usersService.findById(userId);
+  }
+
   async resendConfirmation(email: string) {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
@@ -149,7 +153,10 @@ export class AuthService {
       throw new UnauthorizedException('Пользователь не найден');
     }
 
-    const passwordEquals = await bcrypt.compare(dto.currentPassword, user.password);
+    const passwordEquals = await bcrypt.compare(
+      dto.currentPassword,
+      user.password,
+    );
     if (!passwordEquals) {
       throw new BadRequestException('Текущий пароль указан неверно');
     }
@@ -184,7 +191,11 @@ export class AuthService {
 
     const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
 
-    await this.usersService.setPasswordResetToken(user.id, tokenHash, expiresAt);
+    await this.usersService.setPasswordResetToken(
+      user.id,
+      tokenHash,
+      expiresAt,
+    );
 
     const domen = this.configService.get<string>('DOMEN');
     const resetUrl = `${domen}/auth/reset-password?token=${rawToken}`;
@@ -200,7 +211,8 @@ export class AuthService {
     }
 
     const tokenHash = this.sha256(dto.token);
-    const user = await this.usersService.findByPasswordResetTokenHash(tokenHash);
+    const user =
+      await this.usersService.findByPasswordResetTokenHash(tokenHash);
 
     if (!user) {
       throw new BadRequestException('Недействительный токен');

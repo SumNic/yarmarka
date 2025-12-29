@@ -131,9 +131,9 @@ async function doFetch<TResponse>(
       ? payload.message.join(', ')
       : payload.message
 
-    const error = new Error(message)
-    ;(error as any).statusCode = payload.statusCode
-    ;(error as any).data = payload
+    const error = new Error(message) as Error & { statusCode?: number; data?: ApiErrorPayload }
+    error.statusCode = payload.statusCode
+    error.data = payload
 
     throw error
   }
@@ -181,6 +181,76 @@ export const api = {
 
     confirmPasswordReset: (dto: components['schemas']['ConfirmPasswordResetDto']) =>
       request<void>('POST', '/api/auth/confirm-password-reset', { body: dto }),
+  },
+
+  users: {
+    update: (id: number, dto: components['schemas']['UpdateUserDto']) =>
+      request<void>('PATCH', `/api/users/${id}`, { body: dto }),
+
+    uploadPhoto: async (id: number, file: File) => {
+      const url = buildUrl(import.meta.env.VITE_API_BASE_URL as string | undefined, `/api/users/${id}/photo`)
+
+      const headers: Record<string, string> = {}
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`
+      }
+
+      const form = new FormData()
+      form.append('file', file)
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: form,
+        credentials: 'include',
+      })
+
+      // Если access-token устарел, пробуем один раз обновить через refresh-cookie и повторить запрос.
+      if (res.status === 401) {
+        await refreshAccessToken()
+
+        const retryHeaders: Record<string, string> = {}
+        if (accessToken) {
+          retryHeaders.Authorization = `Bearer ${accessToken}`
+        }
+
+        const retryForm = new FormData()
+        retryForm.append('file', file)
+
+        const retryRes = await fetch(url, {
+          method: 'POST',
+          headers: retryHeaders,
+          body: retryForm,
+          credentials: 'include',
+        })
+
+        if (!retryRes.ok) {
+          const contentType = retryRes.headers.get('content-type') ?? ''
+          if (contentType.includes('application/json')) {
+            const payload = (await retryRes.json()) as ApiErrorPayload
+            const message = Array.isArray(payload.message) ? payload.message.join(', ') : payload.message
+            throw new Error(message)
+          }
+          const text = await retryRes.text().catch(() => '')
+          throw new Error(text || `HTTP ${retryRes.status}`)
+        }
+
+        return (await retryRes.json()) as components['schemas']['UploadResultDto']
+      }
+
+      if (!res.ok) {
+        const contentType = res.headers.get('content-type') ?? ''
+        if (contentType.includes('application/json')) {
+          const payload = (await res.json()) as ApiErrorPayload
+          const message = Array.isArray(payload.message) ? payload.message.join(', ') : payload.message
+          throw new Error(message)
+        }
+        const text = await res.text().catch(() => '')
+        throw new Error(text || `HTTP ${res.status}`)
+      }
+
+      return (await res.json()) as components['schemas']['UploadResultDto']
+    },
   },
 
   products: {

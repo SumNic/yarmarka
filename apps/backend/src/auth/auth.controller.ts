@@ -128,7 +128,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   me(@Req() req: RequestWithUser) {
-    return req.user;
+    return this.authService.me(req.user!.id)
   }
 
   @ApiOperation({ summary: 'Повторная отправка письма подтверждения' })
