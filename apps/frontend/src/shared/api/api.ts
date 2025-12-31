@@ -259,6 +259,78 @@ export const api = {
     create: (dto: components['schemas']['CreateProductDto']) => request<void>('POST', '/api/products', { body: dto }),
     update: (id: number, dto: components['schemas']['UpdateProductDto']) =>
       request<void>('PATCH', `/api/products/${id}`, { body: dto }),
+    uploadPhotos: async (id: number, files: File[]) => {
+      const url = buildUrl(import.meta.env.VITE_API_BASE_URL as string | undefined, `/api/products/${id}/photos`)
+
+      const headers: Record<string, string> = {}
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`
+      }
+
+      const form = new FormData()
+      for (const file of files.slice(0, 10)) {
+        form.append('files', file)
+      }
+
+      const doUpload = async (runtime?: { skipAuthRetry?: boolean }) => {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: form,
+          credentials: 'include',
+        })
+
+        if (res.status === 401 && runtime?.skipAuthRetry !== true) {
+          await refreshAccessToken()
+
+          const retryHeaders: Record<string, string> = {}
+          if (accessToken) {
+            retryHeaders.Authorization = `Bearer ${accessToken}`
+          }
+
+          const retryForm = new FormData()
+          for (const file of files.slice(0, 10)) {
+            retryForm.append('files', file)
+          }
+
+          const retryRes = await fetch(url, {
+            method: 'POST',
+            headers: retryHeaders,
+            body: retryForm,
+            credentials: 'include',
+          })
+
+          if (!retryRes.ok) {
+            const contentType = retryRes.headers.get('content-type') ?? ''
+            if (contentType.includes('application/json')) {
+              const payload = (await retryRes.json()) as ApiErrorPayload
+              const message = Array.isArray(payload.message) ? payload.message.join(', ') : payload.message
+              throw new Error(message)
+            }
+            const text = await retryRes.text().catch(() => '')
+            throw new Error(text || `HTTP ${retryRes.status}`)
+          }
+
+          return (await retryRes.json()) as Array<components['schemas']['UploadResultDto']>
+        }
+
+        if (!res.ok) {
+          const contentType = res.headers.get('content-type') ?? ''
+          if (contentType.includes('application/json')) {
+            const payload = (await res.json()) as ApiErrorPayload
+            const message = Array.isArray(payload.message) ? payload.message.join(', ') : payload.message
+            throw new Error(message)
+          }
+          const text = await res.text().catch(() => '')
+          throw new Error(text || `HTTP ${res.status}`)
+        }
+
+        return (await res.json()) as Array<components['schemas']['UploadResultDto']>
+      }
+
+      return doUpload()
+    },
+    delete: (id: number) => request<void>('DELETE', `/api/products/${id}`),
   },
 
   services: {
@@ -267,6 +339,7 @@ export const api = {
     create: (dto: components['schemas']['CreateServiceDto']) => request<void>('POST', '/api/services', { body: dto }),
     update: (id: number, dto: components['schemas']['UpdateServiceDto']) =>
       request<void>('PATCH', `/api/services/${id}`, { body: dto }),
+    delete: (id: number) => request<void>('DELETE', `/api/services/${id}`),
   },
 
   jobs: {
@@ -274,6 +347,16 @@ export const api = {
     get: (id: number) => request<unknown>('GET', `/api/jobs/${id}`),
     create: (dto: components['schemas']['CreateJobDto']) => request<void>('POST', '/api/jobs', { body: dto }),
     update: (id: number, dto: components['schemas']['UpdateJobDto']) => request<void>('PATCH', `/api/jobs/${id}`, { body: dto }),
+    delete: (id: number) => request<void>('DELETE', `/api/jobs/${id}`),
+  },
+
+  resumes: {
+    list: () => request<unknown>('GET', '/api/resumes'),
+    get: (id: number) => request<unknown>('GET', `/api/resumes/${id}`),
+    create: (dto: components['schemas']['CreateResumeDto']) => request<void>('POST', '/api/resumes', { body: dto }),
+    update: (id: number, dto: components['schemas']['UpdateResumeDto']) =>
+      request<void>('PATCH', `/api/resumes/${id}`, { body: dto }),
+    delete: (id: number) => request<void>('DELETE', `/api/resumes/${id}`),
   },
 
   // type-safety hint: keep linkage to generated OpenAPI paths

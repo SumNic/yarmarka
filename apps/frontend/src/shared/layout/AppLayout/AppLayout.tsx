@@ -43,7 +43,7 @@ export function AppLayout() {
       </Content>
 
       <Footer className="appLayout__footer">
-        <Typography.Text type="secondary">Живая ярмарка — место встречи людей, хозяйств и семей.</Typography.Text>
+        <Typography.Text type="secondary">Родовая ярмарка — место встречи людей, хозяйств и семей.</Typography.Text>
       </Footer>
     </Layout>
   )

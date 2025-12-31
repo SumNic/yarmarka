@@ -11,6 +11,7 @@ import { ConfirmPasswordResetPage } from '@/pages/auth/ConfirmPasswordResetPage/
 import { ProfilePage } from '@/pages/ProfilePage/ProfilePage'
 import { AdEditorPage } from '@/pages/AdEditorPage/AdEditorPage'
 import { SupportPage } from '@/pages/SupportPage/SupportPage'
+import { AdViewPage } from '@/pages/AdViewPage/AdViewPage'
 
 export function AppRouter() {
   return (
@@ -25,6 +26,7 @@ export function AppRouter() {
         <Route path={routes.profile} element={<ProfilePage />} />
         <Route path={routes.adCreate} element={<AdEditorPage mode="create" />} />
         <Route path={routes.adEdit} element={<AdEditorPage mode="edit" />} />
+        <Route path={routes.adView} element={<AdViewPage />} />
         <Route path={routes.support} element={<SupportPage />} />
 
         <Route path="*" element={<Navigate to={routes.home} replace />} />

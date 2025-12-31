@@ -20,22 +20,18 @@ export function SupportPage() {
 
   return (
     <div className="supportPage">
-      <Space direction="vertical" size={16} style={{ width: '100%' }}>
+      <Space orientation="vertical" size={16} style={{ width: '100%' }}>
         <Card>
           <Title level={3} style={{ margin: 0 }}>
             Техподдержка
           </Title>
           <Paragraph style={{ marginTop: 8 }}>
-            На раннем этапе страница полезна, чтобы собрать обратную связь и снизить фрустрацию пользователей.
-          </Paragraph>
-          <Paragraph>
-            Если вопрос срочный — напишите сообщение, мы увидим его и свяжемся. (Пока форма работает как заглушка —
-            дальше подключим реальный канал.)
+            Если вопрос срочный — напишите сообщение, мы увидим его и свяжемся.
           </Paragraph>
         </Card>
 
         <Card>
-          {isSent ? <Alert type="success" showIcon message="Сообщение принято. Спасибо!" /> : null}
+          {isSent ? <Alert type="success" showIcon title="Сообщение принято. Спасибо!" /> : null}
 
           <Form layout="vertical" onFinish={onFinish} requiredMark={false} style={{ marginTop: 12 }}>
             <Form.Item name="email" label="Email для ответа" rules={[{ required: true, type: 'email' }]}>

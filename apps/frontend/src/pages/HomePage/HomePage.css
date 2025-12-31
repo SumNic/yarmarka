@@ -1,6 +1,7 @@
 .homePage {
   max-width: 1100px;
   margin: 0 auto;
+  padding: 16px;
 }
 
 .homePage__hero {
@@ -18,4 +19,16 @@
 
 .homePage__mission {
   max-width: 840px;
+  margin: 0 auto;
+  text-align: center;
 }
+
+.homePage__featureCol {
+  display: flex;
+}
+
+.homePage__featureCard {
+  flex: 1;
+  height: 190px;
+}
+

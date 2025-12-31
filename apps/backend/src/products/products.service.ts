@@ -14,6 +14,7 @@ export class ProductsService {
     const photoUrls = Array.isArray(dto.photoUrls)
       ? dto.photoUrls.slice(0, 10)
       : [];
+
     return this.productRepo.create({
       ...(dto as any),
       userId,

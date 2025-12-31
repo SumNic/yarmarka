@@ -10,7 +10,7 @@ export function HomePage() {
 
   return (
     <div className="homePage">
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} align="stretch">
         <Col xs={24}>
           <Card className="homePage__hero">
             <Title level={2} className="homePage__title">
@@ -34,20 +34,20 @@ export function HomePage() {
           </Card>
         </Col>
 
-        <Col xs={24} md={8}>
-          <Card title="Свои люди">
+        <Col xs={24} md={8} className="homePage__featureCol">
+          <Card title="Свои люди" className="homePage__featureCard">
             <Paragraph>
               Каждое объявление — это человек, семья или хозяйство. Мы исходим из доверия и ясных намерений.
             </Paragraph>
           </Card>
         </Col>
         <Col xs={24} md={8}>
-          <Card title="Минимум шума">
+          <Card title="Минимум шума" className="homePage__featureCard">
             <Paragraph>Без агрессивной рекламы и баннеров. Внимание — ценный ресурс.</Paragraph>
           </Card>
         </Col>
         <Col xs={24} md={8}>
-          <Card title="Долгий путь">
+          <Card title="Долгий путь" className="homePage__featureCard">
             <Paragraph>Проект создаётся на годы: устойчиво, просто и с уважением к людям.</Paragraph>
           </Card>
         </Col>

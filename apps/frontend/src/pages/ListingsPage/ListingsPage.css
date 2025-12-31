@@ -1,10 +1,12 @@
 .listingsPage {
-  max-width: 1100px;
   margin: 0 auto;
+  padding: 16px;
+  /* max-width: 1560px; */
 }
 
 .listingsPage__top {
   width: 100%;
+  margin-bottom: 16px;
 }
 
 .listingsPage__title {
@@ -15,16 +17,38 @@
   width: min(420px, 100%);
 }
 
-.listingsPage__meta {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.65);
-  margin-bottom: 6px;
+.listingsPage__card {
+  cursor: pointer;
 }
 
-.listingsPage__desc {
-  white-space: pre-wrap;
+.listingsPage__grid {
+  display: grid;
+  gap: 16px;
+  justify-content: center;
+  /* Адаптивная сетка с минимальной шириной карточки */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-.listingsPage__desc--empty {
-  color: rgba(0, 0, 0, 0.45);
+.listingsPage__gridItem {
+  width: 100%;
+}
+
+.listingsPage__imageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* квадрат */
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.listingsPage__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.listingsPage__price {
+  font-weight: 600;
 }

@@ -7,6 +7,7 @@ export const routes = {
   confirmPasswordReset: '/auth/reset-password',
   profile: '/profile',
   adCreate: '/ads/new',
+  adView: '/ads/:type/:id',
   adEdit: '/ads/:type/:id/edit',
   support: '/support',
 } as const
