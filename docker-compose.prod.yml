@@ -18,11 +18,11 @@ services:
     networks:
       - ry_net
 
-  migrate:
-    image: sumnic82/rodnaya-server:${IMAGE_TAG}
-    command: yarn migrate:prod
-    depends_on:
-      - postgres
+  # migrate:
+  #   image: sumnic82/rodnaya-server:${IMAGE_TAG}
+  #   command: yarn migrate:prod
+  #   depends_on:
+  #     - postgres
 
 
 networks:

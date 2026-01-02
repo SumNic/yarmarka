@@ -7,7 +7,7 @@ services:
     env_file:
       - ./apps/backend/.env
     ports:
-      - "5000:5000"
+      - "5010:5000"
     depends_on:
     - postgres
     networks:
