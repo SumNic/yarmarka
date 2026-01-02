@@ -296,6 +296,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/resend-confirmation-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Проверка возможности повторной отправки подтверждения email */
+        post: operations["AuthController_resendConfirmationStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products": {
         parameters: {
             query?: never;
@@ -459,6 +476,22 @@ export interface paths {
         head?: never;
         /** Обновить резюме */
         patch: operations["ResumesController_update"];
+        trace?: never;
+    };
+    "/api/support": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SupportController_sendMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -636,6 +669,18 @@ export interface components {
         ResendConfirmationDto: {
             email: string;
         };
+        ResendConfirmationResponseDto: {
+            /**
+             * @example sent
+             * @enum {string}
+             */
+            status: "ok" | "sent" | "cooldown";
+            /**
+             * @description Оставшееся время ожидания в секундах (только для cooldown)
+             * @example 42
+             */
+            secondsLeft?: number;
+        };
         ChangePasswordDto: {
             currentPassword: string;
             newPassword: string;
@@ -646,6 +691,9 @@ export interface components {
         ConfirmPasswordResetDto: {
             token: string;
             newPassword: string;
+        };
+        ResendConfirmationStatusDto: {
+            email: string;
         };
         CreateProductDto: {
             /**
@@ -876,6 +924,13 @@ export interface components {
              * @example 1
              */
             userId?: number;
+        };
+        SupportMessageDto: {
+            /**
+             * @description Текст сообщения
+             * @example Сообщение
+             */
+            message: string;
         };
     };
     responses: never;
@@ -1282,11 +1337,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ResendConfirmationResponseDto"];
+                };
             };
         };
     };
@@ -1342,6 +1399,27 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ConfirmPasswordResetDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_resendConfirmationStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendConfirmationStatusDto"];
             };
         };
         responses: {
@@ -1817,6 +1895,27 @@ export interface operations {
         responses: {
             /** @description Резюме обновлено */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SupportController_sendMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportMessageDto"];
+            };
+        };
+        responses: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

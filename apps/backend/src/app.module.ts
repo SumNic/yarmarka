@@ -19,6 +19,9 @@ import { RolesModule } from './roles/roles.module';
 import cookieParser from 'cookie-parser';
 import { UserRoles } from 'src/common/models/User-roles.model';
 import { Role } from 'src/common/models/Role.model';
+import { SupportController } from './support/support.controller';
+import { SupportService } from './support/support.service';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -83,6 +86,7 @@ import { Role } from 'src/common/models/Role.model';
     JobsModule,
     ResumesModule,
     RolesModule,
+    SupportModule,
   ],
   controllers: [],
   providers: [],

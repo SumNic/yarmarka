@@ -12,7 +12,7 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto } from 'src/common/dto/register.dto';
 import { LoginDto } from 'src/common/dto/login.dto';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { JwtRefreshGuard } from 'src/auth/guards/jwt-refresh.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -22,6 +22,8 @@ import { RequestPasswordResetDto } from 'src/common/dto/request-password-reset.d
 import { ConfirmPasswordResetDto } from 'src/common/dto/confirm-password-reset.dto';
 import { JwtPayload } from 'src/auth/guards/jwt.strategy';
 import { JwtRefreshPayload } from 'src/auth/guards/jwt-refresh.strategy';
+import { ResendConfirmationStatusDto } from 'src/common/dto/resend-confirmation-status.dto';
+import { ResendConfirmationResponseDto } from 'src/common/dto/resend-confirmation-response.dto';
 
 type RequestWithUser = Request & { user?: JwtPayload };
 type RequestWithRefreshUser = Request & { user?: JwtRefreshPayload };
@@ -120,7 +122,9 @@ export class AuthController {
   async confirmEmail(@Query('token') token: string, @Res() res: Response) {
     await this.authService.confirmEmail(token);
 
-    const redirectUrl = `${this.authService.getClientUrl()}/auth/email-confirmed`;
+    const redirectUrl = `${this.authService.getClientUrl()}/profile`;
+    console.log(redirectUrl, 'redirectUrl');
+    
     return res.redirect(302, redirectUrl);
   }
 
@@ -132,8 +136,9 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Повторная отправка письма подтверждения' })
+  @ApiOkResponse({ type: ResendConfirmationResponseDto })
   @Post('resend-confirmation')
-  resendConfirmation(@Body() dto: ResendConfirmationDto) {
+  resendConfirmation(@Body() dto: ResendConfirmationDto): Promise<ResendConfirmationResponseDto> {
     return this.authService.resendConfirmation(dto.email);
   }
 
@@ -155,4 +160,14 @@ export class AuthController {
   confirmPasswordReset(@Body() dto: ConfirmPasswordResetDto) {
     return this.authService.confirmPasswordReset(dto);
   }
+
+  @ApiOperation({
+  summary: 'Проверка возможности повторной отправки подтверждения email',
+})
+@Post('resend-confirmation-status')
+async resendConfirmationStatus(
+  @Body() dto: ResendConfirmationStatusDto,
+) {
+  return this.authService.getEmailConfirmationStatus(dto.email);
+}
 }

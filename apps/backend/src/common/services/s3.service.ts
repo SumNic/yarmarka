@@ -59,7 +59,7 @@ export class S3Service {
       contentType: file.mimetype,
       size: file.size,
     };
-  }
+  }  
 
   private buildPublicUrl(key: string) {
     return `${this.publicBaseUrl.replace(/\/+$/g, '')}/${key}`;

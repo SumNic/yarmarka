@@ -17,6 +17,8 @@ import { ConfirmPasswordResetDto } from 'src/common/dto/confirm-password-reset.d
 import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/common/services/mail.service';
 import { Role } from 'src/common/models/Role.model';
+import { ResendConfirmationStatus } from 'src/common/types/types';
+import { ResendConfirmationResponseDto } from 'src/common/dto/resend-confirmation-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,10 +31,12 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const candidate = await this.usersService.findByEmail(dto.email);
-    console.log(candidate, 'candidate');
 
-    if (candidate) {
-      // await this.issueEmailConfirmation(candidate.id, candidate.email);
+    if (candidate && !candidate.isEmailVerified) {
+      throw new ConflictException('EMAIL_EXISTS_NOT_VERIFIED');
+    }
+
+    if (candidate && candidate.isEmailVerified) {
       throw new ConflictException(
         'Этот адрес электронной почты уже зарегистрирован',
       );
@@ -132,19 +136,28 @@ export class AuthService {
   }
 
   async resendConfirmation(email: string) {
+    console.log(email, 'email');
+
     const user = await this.usersService.findByEmail(email);
-    if (!user) {
+    if (!user || user.isEmailVerified) {
       // не палим существование email
-      return { status: 'ok' };
+      return { status: ResendConfirmationStatus.OK };
     }
 
-    if (user.isEmailVerified) {
-      return { status: 'ok' };
+    const expiresAt = user.emailVerificationTokenExpiresAt;
+
+    if (expiresAt && expiresAt.getTime() > Date.now()) {
+      const secondsLeft = Math.ceil((expiresAt.getTime() - Date.now()) / 1000);
+
+      return {
+        status: ResendConfirmationStatus.COOLDOWN,
+        secondsLeft,
+      };
     }
 
     await this.issueEmailConfirmation(user.id, user.email);
 
-    return { status: 'ok' };
+    return { status: ResendConfirmationStatus.SENT };
   }
 
   async changePassword(userId: number, dto: ChangePasswordDto) {
@@ -301,5 +314,37 @@ export class AuthService {
 
   private sha256(value: string) {
     return crypto.createHash('sha256').update(value).digest('hex');
+  }
+
+  async getEmailConfirmationStatus(email: string) {
+    const user = await this.usersService.findByEmail(email);
+
+    // Не палим существование email
+    if (!user) {
+      return { canResend: true };
+    }
+
+    if (user.isEmailVerified) {
+      return { canResend: false, reason: 'already_verified' };
+    }
+
+    if (!user.emailVerificationTokenExpiresAt) {
+      return { canResend: true };
+    }
+
+    const now = Date.now();
+    const expiresAt = user.emailVerificationTokenExpiresAt.getTime();
+
+    if (expiresAt > now) {
+      const secondsLeft = Math.ceil((expiresAt - now) / 1000);
+
+      return {
+        canResend: false,
+        reason: 'cooldown',
+        secondsLeft,
+      };
+    }
+
+    return { canResend: true };
   }
 }

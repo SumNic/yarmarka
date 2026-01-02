@@ -47,4 +47,34 @@ export class MailService {
 
     this.logger.log(`Password reset email sent to ${to}`);
   }
+
+  async sendSupportEmail(params: {
+    to: string;
+    fromEmail: string;
+    message: string;
+  }) {
+    const { to, fromEmail, message } = params;
+    console.log(to, fromEmail, message, 'to, fromEmail, message');
+    
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      // replyTo: fromEmail,
+      subject: 'Сообщение в техподдержку',
+      text: `
+          Email отправителя: ${fromEmail}
+
+          Сообщение:
+          ${message}
+        `,
+      html: `
+          <p><b>Email отправителя:</b> ${fromEmail}</p>
+          <p><b>Сообщение:</b></p>
+          <pre>${message}</pre>
+        `,
+    });
+
+    this.logger.log(`Support email sent from ${fromEmail}`);
+  }
 }

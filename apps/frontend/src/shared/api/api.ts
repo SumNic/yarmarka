@@ -171,7 +171,7 @@ export const api = {
       }
     },
     resendConfirmation: (dto: components['schemas']['ResendConfirmationDto']) =>
-      request<void>('POST', '/api/auth/resend-confirmation', { body: dto }),
+      request<components['schemas']['ResendConfirmationResponseDto']>('POST', '/api/auth/resend-confirmation', { body: dto }),
 
     changePassword: (dto: components['schemas']['ChangePasswordDto']) =>
       request<void>('POST', '/api/auth/change-password', { body: dto }),
@@ -357,6 +357,10 @@ export const api = {
     update: (id: number, dto: components['schemas']['UpdateResumeDto']) =>
       request<void>('PATCH', `/api/resumes/${id}`, { body: dto }),
     delete: (id: number) => request<void>('DELETE', `/api/resumes/${id}`),
+  },
+
+  support: {
+    sendMessage: (dto: components['schemas']['SupportMessageDto']) => request<void>('POST', '/api/support', { body: dto }),
   },
 
   // type-safety hint: keep linkage to generated OpenAPI paths
