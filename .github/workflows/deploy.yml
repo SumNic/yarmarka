@@ -8,7 +8,7 @@ on:
 env:
   SERVER_USER: sumnic            # ← замени на имя пользователя сервера (например ubuntu)
   SERVER_HOST: 77.222.55.226      # ← замени на IP или домен
-  DEPLOY_PATH: /home/sumnic/rodovaya-yarmarka  # ← путь до проекта на сервере
+  DEPLOY_PATH: /home/sumnic/yarmarka  # ← путь до проекта на сервере
 
 jobs:
   build-and-push:
