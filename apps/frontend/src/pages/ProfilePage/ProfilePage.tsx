@@ -13,7 +13,7 @@ import {
   Empty,
   Spin,
 } from "antd";
-import type { UploadProps, TabsProps } from "antd";
+import type { UploadProps } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { routes } from "@/router/routes";
