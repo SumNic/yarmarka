@@ -48,6 +48,14 @@ export class ServicesController {
     return this.servicesService.findAll();
   }
 
+  @ApiOperation({ summary: 'Мои услуги' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Список услуг пользователя' })
+  @UseGuards(JwtAuthGuard)
+  @Get('my')
+  findMy(@Req() req: RequestWithUser) {
+    return this.servicesService.findByUserId(req.user!.id);
+  }
+
   @ApiOperation({ summary: 'Получить услугу по id' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: HttpStatus.OK, description: 'Услуга' })

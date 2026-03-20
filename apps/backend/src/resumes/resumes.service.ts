@@ -21,6 +21,10 @@ export class ResumesService {
     return this.resumeRepo.findAll();
   }
 
+  findByUserId(userId: number) {
+    return this.resumeRepo.findAll({ where: { userId } });
+  }
+
   async findOne(id: number) {
     const entity = await this.resumeRepo.findByPk(id);
     if (!entity) throw new NotFoundException('Resume not found');

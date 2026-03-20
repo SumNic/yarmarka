@@ -57,9 +57,13 @@ export function RegisterPage() {
     <div className="registerPage">
       <Card className="registerPage__card">
         <Space orientation="vertical" size={12} style={{ width: "100%" }}>
-          <Title level={3} style={{ margin: 0 }}>
-            Регистрация
-          </Title>
+          <div className="registerPage__header">
+            <span className="registerPage__icon">🌱</span>
+            <Title level={3} className="registerPage__title">
+              Создать аккаунт
+            </Title>
+            <p className="registerPage__subtitle">Присоединяйтесь к родовой ярмарке</p>
+          </div>
 
           {error && error !== "EMAIL_EXISTS_NOT_VERIFIED" && (
             <Alert type="error" title={error} showIcon />
@@ -131,7 +135,7 @@ export function RegisterPage() {
             </Button>
           </Form>
 
-          <Text type="secondary">
+          <Text type="secondary" className="registerPage__links">
             Уже есть аккаунт? <Link to={routes.login}>Войти</Link>
           </Text>
         </Space>

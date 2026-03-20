@@ -26,6 +26,10 @@ export class ProductsService {
     return this.productRepo.findAll();
   }
 
+  findByUserId(userId: number) {
+    return this.productRepo.findAll({ where: { userId } });
+  }
+
   async findOne(id: number) {
     const entity = await this.productRepo.findByPk(id);
     if (!entity) throw new NotFoundException('Product not found');

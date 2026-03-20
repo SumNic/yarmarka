@@ -105,6 +105,14 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  @ApiOperation({ summary: 'Мои товары' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Список товаров пользователя' })
+  @UseGuards(JwtAuthGuard)
+  @Get('my')
+  findMy(@Req() req: RequestWithUser) {
+    return this.productsService.findByUserId(req.user!.id);
+  }
+
   @ApiOperation({ summary: 'Получить товар по id' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: HttpStatus.OK, description: 'Товар' })

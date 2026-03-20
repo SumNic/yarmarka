@@ -25,9 +25,13 @@ export function LoginPage() {
     <div className="loginPage">
       <Card className="loginPage__card">
         <Space orientation="vertical" size={12} style={{ width: '100%' }}>
-          <Title level={3} style={{ margin: 0 }}>
-            Вход
-          </Title>
+          <div className="loginPage__header">
+            <span className="loginPage__icon">👋</span>
+            <Title level={3} className="loginPage__title">
+              С возвращением!
+            </Title>
+            <p className="loginPage__subtitle">Войдите в свой аккаунт</p>
+          </div>
 
           {error ? <Alert type="error" title={error} showIcon /> : null}
 
@@ -44,7 +48,7 @@ export function LoginPage() {
             </Button>
           </Form>
 
-          <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+          <Space orientation="vertical" size={4} className="loginPage__links" style={{ width: '100%' }}>
             <Text type="secondary">
               Нет аккаунта? <Link to={routes.register}>Регистрация</Link>
             </Text>

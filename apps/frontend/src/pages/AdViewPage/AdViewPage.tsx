@@ -16,7 +16,7 @@ import { api } from "@/shared/api/api";
 import { DEFAULT_IMAGE } from "@/utils/constants";
 import "./AdViewPage.css";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 type AdData = {
   id?: number;
@@ -99,7 +99,7 @@ export function AdViewPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: 48, textAlign: "center" }}>
+      <div className="adViewPage__loading">
         <Spin size="large" />
       </div>
     );
@@ -107,72 +107,77 @@ export function AdViewPage() {
 
   if (error || !data) {
     return (
-      <div style={{ padding: 48 }}>
+      <div className="adViewPage__error">
         <Text type="danger">{error ?? "Объявление не найдено"}</Text>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <Row gutter={[24, 24]}>
-        <Col xs={24} md={12}>
-          {data.photoUrls && data.photoUrls.length > 0 ? (
-            <Image.PreviewGroup>
-              <Carousel
-                className="adView__carousel"
-                dots
-                draggable
-                arrows
-              >
-                {data.photoUrls.map((url, i) => (
-                  <div key={i} className="adView__slide">
-                    <div className="adView__imageWrap">
-                      <img
-                        src={url}
-                        className="adView__image"
-                        alt=""
-                      />
+    <div className="adViewPage">
+      <Row className="adViewPage__row" gutter={[24, 24]}>
+        <Col xs={24} md={12} className="adViewPage__col">
+          <div className="adViewPage__carouselWrapper">
+            {data.photoUrls && data.photoUrls.length > 0 ? (
+              <Image.PreviewGroup>
+                <Carousel
+                  className="adViewPage__carousel"
+                  dots
+                  draggable
+                  arrows
+                >
+                  {data.photoUrls.map((url, i) => (
+                    <div key={i} className="adViewPage__slide">
+                      <div className="adViewPage__imageWrap">
+                        <img
+                          src={url}
+                          className="adViewPage__image"
+                          alt=""
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </Carousel>
-            </Image.PreviewGroup>
-          ) : (
-            <div className="adView__imageWrap">
-              <img
-                src={DEFAULT_IMAGE}
-                className="adView__image"
-                alt=""
-              />
-            </div>
-          )}
+                  ))}
+                </Carousel>
+              </Image.PreviewGroup>
+            ) : (
+              <div className="adViewPage__slide">
+                <div className="adViewPage__imageWrap">
+                  <img
+                    src={DEFAULT_IMAGE}
+                    className="adViewPage__image"
+                    alt=""
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </Col>
 
-        <Col xs={24} md={12}>
-          <Card>
+        <Col xs={24} md={12} className="adViewPage__col">
+          <Card className="adViewPage__card">
             <Space orientation="vertical" size={12} style={{ width: "100%" }}>
-              <Title level={3}>{data.title || "Без названия"}</Title>
+              <Title level={3} className="adViewPage__title">{data.title || "Без названия"}</Title>
 
               {data.category && (
-                <Text type="secondary">Категория: {data.category}</Text>
+                <span className="adViewPage__category">Категория: {data.category}</span>
               )}
 
               {typeof data.price === "number" ? (
-                <Title level={4}>Цена: {data.price}</Title>
+                <Title level={4} className="adViewPage__price">Цена: {data.price}</Title>
               ) : typeof data.salary === "number" ? (
-                <Title level={4}>Оплата: {data.salary}</Title>
+                <Title level={4} className="adViewPage__price">Оплата: {data.salary}</Title>
               ) : null}
 
               {data.description ? (
-                <Paragraph>{data.description}</Paragraph>
+                <div className="adViewPage__description">{data.description}</div>
               ) : (
                 <Text type="secondary">Описание не указано</Text>
               )}
 
-              <Space>
-                <Button onClick={() => navigate(-1)}>Назад</Button>
+              <Space className="adViewPage__actions">
+                <Button className="adViewPage__backBtn" onClick={() => navigate(-1)}>Назад</Button>
                 <Button
+                  className="adViewPage__editBtn"
                   type="primary"
                   onClick={() =>
                     navigate(`/ads/${type}/${data.id}/edit`)

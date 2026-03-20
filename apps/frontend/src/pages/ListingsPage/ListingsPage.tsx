@@ -159,17 +159,17 @@ export function ListingsPage() {
                 <div className="listingsPage__imageWrap">
                   {item.photoUrls && item.photoUrls.length > 0 ? (
                     <Carousel
-                      className="adView__carousel"
+                      className="listingsPage__carousel"
                       dots
                       draggable
                       arrows
                     >
                       {item.photoUrls.map((url, i) => (
-                        <div key={i} className="adView__slide">
-                          <div className="adView__imageWrap">
+                        <div key={i} className="listingsPage__slide">
+                          <div className="listingsPage__imageWrap">
                             <img
                               src={url}
-                              className="adView__image"
+                              className="listingsPage__image"
                               alt={item.title || ""}
                             />
                           </div>
@@ -177,10 +177,10 @@ export function ListingsPage() {
                       ))}
                     </Carousel>
                   ) : (
-                    <div className="adView__imageWrap">
+                    <div className="listingsPage__imageWrap">
                       <img
                         src={DEFAULT_IMAGE}
-                        className="adView__image"
+                        className="listingsPage__image"
                         alt="Без изображения"
                       />
                     </div>
@@ -200,12 +200,10 @@ export function ListingsPage() {
             </div>
           ))
         ) : (
-          <div className="listingsPage__gridItem">
-            <Card>
-              <Text type="secondary">
-                Пока нет объявлений. Вы можете создать первое.
-              </Text>
-            </Card>
+          <div className="listingsPage__empty">
+            <Text type="secondary">
+              Пока нет объявлений. Вы можете создать первое.
+            </Text>
           </div>
         )}
       </div>

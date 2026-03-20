@@ -1,9 +1,126 @@
 .loginPage {
   display: flex;
   justify-content: center;
-  padding: 24px 0;
+  align-items: center;
+  min-height: calc(100vh - var(--header-height) - 120px);
+  padding: 40px 24px;
+  background: var(--gradient-hero);
 }
 
 .loginPage__card {
-  width: min(420px, 100%);
+  width: min(440px, 100%);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border-light);
+  overflow: hidden;
+}
+
+.loginPage__card::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.loginPage__header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.loginPage__icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.loginPage__title {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.loginPage__subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+
+.loginPage .ant-form-item-label > label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.loginPage .ant-input {
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border-color: var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.loginPage .ant-input:hover {
+  border-color: var(--color-primary-light);
+}
+
+.loginPage .ant-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+.loginPage .ant-btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-md);
+  margin-top: 8px;
+  transition: all var(--transition-fast);
+}
+
+.loginPage .ant-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.loginPage__links {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.loginPage__links .ant-typography {
+  font-size: 0.9rem;
+}
+
+.loginPage__links a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-fast);
+}
+
+.loginPage__links a:hover {
+  color: var(--color-primary-dark);
+}
+
+@media (max-width: 480px) {
+  .loginPage {
+    padding: 24px 16px;
+  }
+
+  .loginPage__card {
+    border-radius: var(--radius-lg);
+  }
 }

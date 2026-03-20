@@ -331,6 +331,7 @@ export const api = {
       return doUpload()
     },
     delete: (id: number) => request<void>('DELETE', `/api/products/${id}`),
+    my: () => request<unknown>('GET', '/api/products/my'),
   },
 
   services: {
@@ -340,6 +341,7 @@ export const api = {
     update: (id: number, dto: components['schemas']['UpdateServiceDto']) =>
       request<void>('PATCH', `/api/services/${id}`, { body: dto }),
     delete: (id: number) => request<void>('DELETE', `/api/services/${id}`),
+    my: () => request<unknown>('GET', '/api/services/my'),
   },
 
   jobs: {
@@ -348,6 +350,7 @@ export const api = {
     create: (dto: components['schemas']['CreateJobDto']) => request<void>('POST', '/api/jobs', { body: dto }),
     update: (id: number, dto: components['schemas']['UpdateJobDto']) => request<void>('PATCH', `/api/jobs/${id}`, { body: dto }),
     delete: (id: number) => request<void>('DELETE', `/api/jobs/${id}`),
+    my: () => request<unknown>('GET', '/api/jobs/my'),
   },
 
   resumes: {
@@ -357,6 +360,7 @@ export const api = {
     update: (id: number, dto: components['schemas']['UpdateResumeDto']) =>
       request<void>('PATCH', `/api/resumes/${id}`, { body: dto }),
     delete: (id: number) => request<void>('DELETE', `/api/resumes/${id}`),
+    my: () => request<unknown>('GET', '/api/resumes/my'),
   },
 
   support: {

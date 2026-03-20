@@ -26,12 +26,13 @@ export function AppLayout() {
     <Layout className="appLayout">
       <Header className="appLayout__header">
         <div className="appLayout__brand" onClick={() => navigate(routes.home)}>
+          <span className="appLayout__brandIcon">🌿</span>
           <Typography.Text className="appLayout__brandText">Родовая Ярмарка</Typography.Text>
         </div>
         <Menu
           className="appLayout__menu"
           mode="horizontal"
-          theme="dark"
+          theme="light"
           selectedKeys={selectedKeys?.length ? selectedKeys : [routes.home]}
           items={items}
           onClick={(e) => navigate(e.key)}

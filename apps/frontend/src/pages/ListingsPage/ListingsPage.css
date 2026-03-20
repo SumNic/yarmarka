@@ -1,44 +1,111 @@
 .listingsPage {
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: 16px;
-  /* max-width: 1560px; */
+  padding: 8px 24px 24px;
 }
 
 .listingsPage__top {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
 }
 
 .listingsPage__title {
-  margin: 0 !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .listingsPage__search {
-  width: min(420px, 100%);
+  min-width: 280px;
+  flex: 1;
+  max-width: 420px;
 }
 
-.listingsPage__card {
-  cursor: pointer;
+.listingsPage__search .ant-input {
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border-color: var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.listingsPage__search .ant-input:hover {
+  border-color: var(--color-primary-light);
+}
+
+.listingsPage__search .ant-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+.listingsPage .ant-segmented {
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  padding: 4px;
+}
+
+.listingsPage .ant-segmented-item {
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.listingsPage .ant-segmented-item-selected {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.listingsPage .ant-btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 20px;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.listingsPage .ant-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .listingsPage__grid {
   display: grid;
-  gap: 16px;
-  justify-content: center;
-  /* Адаптивная сетка с минимальной шириной карточки */
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .listingsPage__gridItem {
   width: 100%;
 }
 
+.listingsPage__card {
+  height: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+}
+
+.listingsPage__card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-light);
+}
+
 .listingsPage__imageWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1; /* квадрат */
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .listingsPage__image {
@@ -47,8 +114,86 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.listingsPage__card:hover .listingsPage__image {
+  transform: scale(1.05);
+}
+
+.listingsPage__card .ant-card-body {
+  padding: 16px;
+}
+
+.listingsPage__card .ant-typography {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: 8px !important;
 }
 
 .listingsPage__price {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin-top: 8px;
+}
+
+.listingsPage__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 64px 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 2px dashed var(--color-border);
+}
+
+.listingsPage__empty .ant-typography {
+  font-size: 1rem;
+}
+
+/* Carousel styles */
+.listingsPage__card .ant-carousel {
+  margin: -16px -16px 0 -16px;
+  width: calc(100% + 32px);
+}
+
+.listingsPage__card .ant-carousel .slick-slide {
+  height: 200px;
+}
+
+.listingsPage__card .ant-carousel .slick-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .listingsPage {
+    padding: 8px 16px 16px;
+  }
+
+  .listingsPage__top {
+    padding: 16px;
+  }
+
+  .listingsPage__title {
+    font-size: 1.5rem !important;
+  }
+
+  .listingsPage__search {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .listingsPage__grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .listingsPage__grid {
+    grid-template-columns: 1fr;
+  }
 }

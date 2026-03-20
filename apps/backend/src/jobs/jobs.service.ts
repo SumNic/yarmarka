@@ -21,6 +21,10 @@ export class JobsService {
     return this.jobRepo.findAll();
   }
 
+  findByUserId(userId: number) {
+    return this.jobRepo.findAll({ where: { userId } });
+  }
+
   async findOne(id: number) {
     const entity = await this.jobRepo.findByPk(id);
     if (!entity) throw new NotFoundException('Job not found');

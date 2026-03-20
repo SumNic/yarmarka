@@ -48,6 +48,14 @@ export class JobsController {
     return this.jobsService.findAll();
   }
 
+  @ApiOperation({ summary: 'Мои вакансии' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Список вакансий пользователя' })
+  @UseGuards(JwtAuthGuard)
+  @Get('my')
+  findMy(@Req() req: RequestWithUser) {
+    return this.jobsService.findByUserId(req.user!.id);
+  }
+
   @ApiOperation({ summary: 'Получить вакансию по id' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: HttpStatus.OK, description: 'Вакансия' })

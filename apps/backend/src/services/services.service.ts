@@ -21,6 +21,10 @@ export class ServicesService {
     return this.serviceRepo.findAll();
   }
 
+  findByUserId(userId: number) {
+    return this.serviceRepo.findAll({ where: { userId } });
+  }
+
   async findOne(id: number) {
     const entity = await this.serviceRepo.findByPk(id);
     if (!entity) throw new NotFoundException('Service not found');

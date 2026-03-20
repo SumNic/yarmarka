@@ -48,6 +48,14 @@ export class ResumesController {
     return this.resumesService.findAll();
   }
 
+  @ApiOperation({ summary: 'Мои резюме' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Список резюме пользователя' })
+  @UseGuards(JwtAuthGuard)
+  @Get('my')
+  findMy(@Req() req: RequestWithUser) {
+    return this.resumesService.findByUserId(req.user!.id);
+  }
+
   @ApiOperation({ summary: 'Получить резюме по id' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: HttpStatus.OK, description: 'Резюме' })
