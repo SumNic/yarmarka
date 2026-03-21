@@ -20,7 +20,7 @@ async function bootstrap() {
     .build();
 
   // CORS настройки
-  const clientUrl = configService.get('CLIENT_URL') || 'http://localhost:5173';
+  const clientUrl = JSON.parse(configService.get('CLIENT_URL') || '[]');
   const mode = configService.get('NODE_ENV') || 'prod';
   console.log(mode, 'mode');
   console.log(clientUrl, 'clientUrl');
@@ -36,12 +36,7 @@ async function bootstrap() {
         /^http:\/\/10\.\d+\.\d+\.\d+:5173$/,
         /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+:5173$/,
       ]
-    : [
-        clientUrl,
-        /^https:\/\/.*\.vercel\.app$/,
-        'https://rodovaya-yarmarka.ru',
-        'https://www.rodovaya-yarmarka.ru',
-      ];
+    : clientUrl;
 
   app.enableCors({
     credentials: true,
