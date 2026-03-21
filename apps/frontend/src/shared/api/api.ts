@@ -1,4 +1,5 @@
 import type { components, paths } from '@/utils/api'
+import { getApiBaseUrl } from '@/utils/getApiUrl'
 
 type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE'
 
@@ -49,7 +50,7 @@ async function refreshAccessToken() {
   if (!refreshPromise) {
     refreshPromise = (async () => {
       try {
-        const refreshUrl = buildUrl(import.meta.env.VITE_API_BASE_URL as string | undefined, '/api/auth/refresh')
+        const refreshUrl = buildUrl(getApiBaseUrl(), '/api/auth/refresh')
         const res = await fetch(refreshUrl, {
           method: 'POST',
           credentials: 'include',
@@ -85,7 +86,7 @@ async function doFetch<TResponse>(
   options?: RequestOptions,
   runtime?: { skipAuthRetry?: boolean },
 ): Promise<TResponse> {
-  const url = buildUrl(import.meta.env.VITE_API_BASE_URL as string | undefined, path, options?.query)
+  const url = buildUrl(getApiBaseUrl(), path, options?.query)
 
   const headers: Record<string, string> = {
     ...(options?.headers ?? {}),
@@ -188,7 +189,7 @@ export const api = {
       request<void>('PATCH', `/api/users/${id}`, { body: dto }),
 
     uploadPhoto: async (id: number, file: File) => {
-      const url = buildUrl(import.meta.env.VITE_API_BASE_URL as string | undefined, `/api/users/${id}/photo`)
+      const url = buildUrl(getApiBaseUrl(), `/api/users/${id}/photo`)
 
       const headers: Record<string, string> = {}
       if (accessToken) {
@@ -260,7 +261,7 @@ export const api = {
     update: (id: number, dto: components['schemas']['UpdateProductDto']) =>
       request<void>('PATCH', `/api/products/${id}`, { body: dto }),
     uploadPhotos: async (id: number, files: File[]) => {
-      const url = buildUrl(import.meta.env.VITE_API_BASE_URL as string | undefined, `/api/products/${id}/photos`)
+      const url = buildUrl(getApiBaseUrl(), `/api/products/${id}/photos`)
 
       const headers: Record<string, string> = {}
       if (accessToken) {

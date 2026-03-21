@@ -19,11 +19,29 @@ async function bootstrap() {
     .setVersion('1.0.0')
     .build();
 
+  // CORS настройки
+  const clientUrl = configService.get('CLIENT_URL') || 'http://localhost:5173';
+  const mode = configService.get('NODE_ENV') || 'prod';
+  console.log(mode, 'mode');
+  
+  const isDev = mode === 'dev';
+  
+  // В dev разрешаем localhost и LAN, в проде - только CLIENT_URL из env
+  const corsOrigins = isDev
+    ? [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        /^http:\/\/192\.168\.\d+\.\d+:5173$/,
+        /^http:\/\/10\.\d+\.\d+\.\d+:5173$/,
+        /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+:5173$/,
+      ]
+    : [clientUrl];
+
   app.enableCors({
     credentials: true,
-    origin: true,
+    origin: corsOrigins,
     allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
-    methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -43,8 +61,13 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  await app.listen(configService.get('PORT') || 5000, () =>
-    console.log(`Server started on port = ${configService.get('PORT')}`),
+  const port = configService.get('PORT') || 5000;
+  
+  // В dev-режиме слушаем все интерфейсы, в проде - только localhost
+  const host = isDev ? '0.0.0.0' : 'localhost';
+
+  await app.listen(port, host, () =>
+    console.log(`Server started on ${host}:${port}`),
   );
 }
 void bootstrap();

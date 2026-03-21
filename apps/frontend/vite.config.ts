@@ -10,4 +10,14 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  server: {
+    host: '0.0.0.0', // Разрешить доступ по локальной сети (только dev)
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5010',
+        changeOrigin: true,
+      },
+    },
+  },
 })
