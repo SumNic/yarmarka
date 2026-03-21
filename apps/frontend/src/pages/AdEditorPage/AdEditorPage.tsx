@@ -68,6 +68,9 @@ export function AdEditorPage(props: Props) {
   const [productPhotoUrls, setProductPhotoUrls] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [photosError, setPhotosError] = useState<string | null>(null);
+  
+  // Temporary storage for photos before product is saved
+  const [pendingPhotos, setPendingPhotos] = useState<{ file: RcFile; preview: string }[]>([]);
 
   const canEdit = Boolean(user?.id);
 
@@ -187,6 +190,21 @@ export function AdEditorPage(props: Props) {
 
           if (created?.id) {
             setProductId(created.id);
+            
+            // Upload pending photos after product is created
+            if (pendingPhotos.length > 0) {
+              setIsUploadingPhotos(true);
+              const filesToUpload = pendingPhotos.map(p => p.file);
+              const uploadResults = await api.products.uploadPhotos(created.id, filesToUpload);
+              
+              const uploadedUrls = uploadResults
+                .map(r => r.url)
+                .filter((url): url is string => typeof url === "string");
+              
+              setProductPhotoUrls(uploadedUrls.slice(0, 10));
+              setPendingPhotos([]);
+              setIsUploadingPhotos(false);
+            }
           }
         } else if (idFromParams) {
           await api.products.update(idFromParams, {
@@ -259,15 +277,7 @@ export function AdEditorPage(props: Props) {
         }
       }
 
-      if (
-        mode === "create" &&
-        values.type === "products" &&
-        productPhotoUrls.length === 0
-      ) {
-        messageApi.success("Товар создан. Добавьте фотографии");
-        return;
-      }
-
+      messageApi.success("Объявление сохранено");
       navigate(routes.listings);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось сохранить");
@@ -290,14 +300,28 @@ export function AdEditorPage(props: Props) {
     return null;
   }
 
+  // Combine persisted URLs with pending local photos
   const productPhotoFileList = useMemo<UploadFile[]>(() => {
-    return productPhotoUrls.slice(0, 10).map((url, index) => ({
-      uid: `${index}:${url}`,
+    const files: UploadFile[] = productPhotoUrls.slice(0, 10).map((url, index) => ({
+      uid: `persisted:${index}:${url}`,
       name: url.split("/").pop() ?? "photo",
       status: "done",
       url,
     }));
-  }, [productPhotoUrls]);
+    
+    // Add pending photos (not yet uploaded)
+    pendingPhotos.forEach((photo, index) => {
+      files.push({
+        uid: `pending:${index}:${photo.file.name}`,
+        name: photo.file.name,
+        status: "uploading",
+        percent: 0,
+        thumbUrl: photo.preview,
+      });
+    });
+    
+    return files;
+  }, [productPhotoUrls, pendingPhotos]);
 
   const productPhotosUploadProps: UploadProps = {
     accept: "image/jpeg,image/png,image/webp",
@@ -305,7 +329,7 @@ export function AdEditorPage(props: Props) {
     fileList: productPhotoFileList,
     maxCount: 10,
     multiple: true,
-    disabled: !canEdit || isLoading || isUploadingPhotos || !productId,
+    disabled: !canEdit || isLoading || isUploadingPhotos,
 
     beforeUpload: (file) => {
       const error = validateImage(file);
@@ -313,46 +337,28 @@ export function AdEditorPage(props: Props) {
         setPhotosError(error);
         return Upload.LIST_IGNORE;
       }
-      return true;
-    },
-
-    customRequest: async ({ file, onSuccess, onError }) => {
-      if (!productId) {
-        onError?.(new Error("Сначала сохраните товар"));
-        return;
-      }
-
-      try {
-        setIsUploadingPhotos(true);
-        setPhotosError(null);
-
-        const res = await api.products.uploadPhotos(productId, [
-          file as RcFile,
-        ]);
-
-        const urls = Array.isArray(res)
-          ? res
-              .map((x) => (typeof x?.url === "string" ? x.url : null))
-              .filter((u): u is string => Boolean(u))
-          : [];
-
-        setProductPhotoUrls((prev) => {
-          const merged = [...prev, ...urls];
-          return merged.slice(0, 10);
+      
+      // Add to pending photos instead of immediate upload
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPendingPhotos((prev) => {
+          const newPending = [...prev, { file, preview: e.target?.result as string }];
+          return newPending.slice(0, 10);
         });
-
-        onSuccess?.({}, new XMLHttpRequest());
-      } catch (e) {
-        const message =
-          e instanceof Error ? e.message : "Не удалось загрузить фото";
-        setPhotosError(message);
-        onError?.(new Error(message));
-      } finally {
-        setIsUploadingPhotos(false);
-      }
+      };
+      reader.readAsDataURL(file);
+      
+      return false; // Prevent default upload
     },
 
     onRemove: (file) => {
+      // Check if it's a pending photo
+      if (file.uid?.startsWith("pending:")) {
+        setPendingPhotos((prev) => prev.filter((_, idx) => `pending:${idx}` !== file.uid.split(":")[1]));
+        return true;
+      }
+      
+      // It's a persisted photo
       const url = typeof file.url === "string" ? file.url : null;
       if (!url) return true;
 
@@ -498,11 +504,7 @@ export function AdEditorPage(props: Props) {
             {type === "products" ? (
               <Form.Item
                 label="Фото товара (до 10)"
-                extra={
-                  productId
-                    ? "Можно перетащить или выбрать файлы"
-                    : "Сначала нажмите «Сохранить», затем добавляйте фото"
-                }
+                extra="Можно добавить фото до сохранения — они загрузятся после сохранения"
               >
                 <Upload {...productPhotosUploadProps}>
                   {productPhotoFileList.length >= 10 ? null : (
