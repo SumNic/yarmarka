@@ -66,11 +66,12 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(dto);
+    const isDev = process.env.NODE_ENV === 'dev';
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: isDev ? 'lax' : 'none',
+      secure: !isDev,
       path: '/',
     });
 
@@ -88,13 +89,14 @@ export class AuthController {
   ) {
     const user = req.user;
     const refreshToken = user?.refreshToken;
+    const isDev = process.env.NODE_ENV === 'dev';
 
     const result = await this.authService.refresh(user!.id, refreshToken!);
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: isDev ? 'lax' : 'none',
+      secure: !isDev,
       path: '/',
     });
 
