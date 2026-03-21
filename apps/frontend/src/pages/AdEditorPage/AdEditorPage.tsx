@@ -62,13 +62,10 @@ export function AdEditorPage(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [productId, setProductId] = useState<number | null>(
-    mode === "edit" ? idFromParams ?? null : null
-  );
   const [productPhotoUrls, setProductPhotoUrls] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [photosError, setPhotosError] = useState<string | null>(null);
-  
+
   // Temporary storage for photos before product is saved
   const [pendingPhotos, setPendingPhotos] = useState<{ file: RcFile; preview: string }[]>([]);
 
@@ -137,7 +134,6 @@ export function AdEditorPage(props: Props) {
 
         setType(typeFromParams);
         if (typeFromParams === "products") {
-          setProductId(idFromParams);
           setProductPhotoUrls(photoUrls.slice(0, 10));
         }
 
@@ -188,23 +184,19 @@ export function AdEditorPage(props: Props) {
             photoUrls: [],
           })) as unknown as { id?: number };
 
-          if (created?.id) {
-            setProductId(created.id);
-            
-            // Upload pending photos after product is created
-            if (pendingPhotos.length > 0) {
-              setIsUploadingPhotos(true);
-              const filesToUpload = pendingPhotos.map(p => p.file);
-              const uploadResults = await api.products.uploadPhotos(created.id, filesToUpload);
-              
-              const uploadedUrls = uploadResults
-                .map(r => r.url)
-                .filter((url): url is string => typeof url === "string");
-              
-              setProductPhotoUrls(uploadedUrls.slice(0, 10));
-              setPendingPhotos([]);
-              setIsUploadingPhotos(false);
-            }
+          // Upload pending photos after product is created
+          if (created?.id && pendingPhotos.length > 0) {
+            setIsUploadingPhotos(true);
+            const filesToUpload = pendingPhotos.map(p => p.file);
+            const uploadResults = await api.products.uploadPhotos(created.id, filesToUpload);
+
+            const uploadedUrls = uploadResults
+              .map(r => r.url)
+              .filter((url): url is string => typeof url === "string");
+
+            setProductPhotoUrls(uploadedUrls.slice(0, 10));
+            setPendingPhotos([]);
+            setIsUploadingPhotos(false);
           }
         } else if (idFromParams) {
           await api.products.update(idFromParams, {
@@ -502,10 +494,7 @@ export function AdEditorPage(props: Props) {
             </Form.Item>
 
             {type === "products" ? (
-              <Form.Item
-                label="Фото товара (до 10)"
-                extra="Можно добавить фото до сохранения — они загрузятся после сохранения"
-              >
+              <Form.Item label="Фото товара (до 10)">
                 <Upload {...productPhotosUploadProps}>
                   {productPhotoFileList.length >= 10 ? null : (
                     <div>
