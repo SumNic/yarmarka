@@ -1,4 +1,5 @@
-import { Layout, Menu, Typography, Button, Space } from 'antd'
+import { useState } from 'react'
+import { Layout, Menu, Typography, Button, Space, Drawer } from 'antd'
 import type { MenuProps } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { routes } from '@/router/routes'
@@ -11,6 +12,7 @@ export function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuthStore()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const menuItems: MenuProps['items'] = [
     { key: routes.home, label: 'Главная' },
@@ -40,6 +42,11 @@ export function AppLayout() {
     .filter((key): key is string => typeof key === 'string')
     .filter((key) => location.pathname === key || location.pathname.startsWith(key + '/'))
 
+  const handleMenuClick = (key: string) => {
+    navigate(key)
+    setMobileMenuOpen(false)
+  }
+
   return (
     <Layout className="appLayout">
       <Header className="appLayout__header">
@@ -55,6 +62,34 @@ export function AppLayout() {
           items={menuItems}
           onClick={(e) => navigate(e.key)}
         />
+        <Button
+          className="appLayout__mobile-menu-btn"
+          type="text"
+          size="large"
+          onClick={() => setMobileMenuOpen(true)}
+          icon={
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          }
+        />
+        <Drawer
+          title="Меню"
+          placement="right"
+          onClose={() => setMobileMenuOpen(false)}
+          open={mobileMenuOpen}
+        >
+          <Menu
+            mode="vertical"
+            theme="light"
+            selectedKeys={selectedKeys?.length ? selectedKeys : [routes.home]}
+            items={menuItems}
+            onClick={(e) => handleMenuClick(e.key)}
+          />
+          <div style={{ marginTop: 16 }}>{authButtons}</div>
+        </Drawer>
         {authButtons}
       </Header>
 

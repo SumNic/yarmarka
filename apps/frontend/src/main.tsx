@@ -1,7 +1,7 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, theme } from 'antd'
 import ruRU from 'antd/locale/ru_RU'
 
 import './index.css'
@@ -9,7 +9,7 @@ import 'antd/dist/reset.css'
 
 import App from './App.tsx'
 
-const antdTheme = {
+const lightTheme = {
   token: {
     colorPrimary: '#2e7d32',
     colorLink: '#2e7d32',
@@ -20,6 +20,7 @@ const antdTheme = {
     borderRadiusXL: 24,
     colorBgLayout: '#faf8f5',
     colorBgContainer: '#ffffff',
+    colorBgElevated: '#ffffff',
     colorText: '#1a1a1a',
     colorTextSecondary: '#5a5a5a',
     colorBorder: '#e8e4e0',
@@ -54,15 +55,48 @@ const antdTheme = {
   },
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+const darkTheme = {
+  ...lightTheme,
+  algorithm: theme.darkAlgorithm,
+  token: {
+    ...lightTheme.token,
+    colorBgLayout: '#1a1a1a',
+    colorBgContainer: '#242424',
+    colorBgElevated: '#2a2a2a',
+    colorText: '#e0e0e0',
+    colorTextSecondary: '#b0b0b0',
+    colorBorder: '#3a3a3a',
+  },
+}
+
+function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    setIsDark(mediaQuery.matches)
+
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
+
+  return (
     <ConfigProvider
       locale={ruRU}
-      theme={antdTheme}
+      theme={isDark ? darkTheme : lightTheme}
     >
+      {children}
+    </ConfigProvider>
+  )
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <ThemeProvider>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </ConfigProvider>
+    </ThemeProvider>
   </StrictMode>,
 )

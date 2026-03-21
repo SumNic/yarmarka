@@ -150,22 +150,45 @@
   }
 
   .appLayout__brandText {
-    font-size: 1.1rem;
+    display: none;
   }
 
   .appLayout__menu {
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: none;
   }
 
-  .appLayout__menu :global(.ant-menu-item) {
-    padding: 0 12px !important;
-    font-size: 0.85rem;
+  .appLayout__mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a !important;
+    height: 48px !important;
+    width: 48px !important;
+  }
+
+  .appLayout__mobile-menu-btn:hover {
+    color: var(--color-primary) !important;
   }
 
   .appLayout__content {
     padding: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  .appLayout__mobile-menu-btn {
+    display: none !important;
+  }
+}
+
+/* Dark theme - dark hamburger button on light header */
+@media (prefers-color-scheme: dark) {
+  .appLayout__mobile-menu-btn {
+    color: #000000 !important;
+  }
+
+  .appLayout__mobile-menu-btn:hover {
+    color: var(--color-primary-dark) !important;
   }
 }
 
