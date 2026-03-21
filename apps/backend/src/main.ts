@@ -21,11 +21,7 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: [
-      'capacitor://localhost',
-      'http://localhost',
-      configService.get('CLIENT_URL'),
-    ],
+    origin: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
     methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
   });

@@ -69,8 +69,8 @@ export class AuthController {
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: this.authService.isCookieSecure(),
+      sameSite: 'none',
+      secure: true,
       path: '/',
     });
 
@@ -93,8 +93,8 @@ export class AuthController {
 
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: this.authService.isCookieSecure(),
+      sameSite: 'none',
+      secure: true,
       path: '/',
     });
 
