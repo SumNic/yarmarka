@@ -67,8 +67,8 @@ async function bootstrap() {
   // В dev-режиме слушаем все интерфейсы, в проде - только localhost
   const host = isDev ? '0.0.0.0' : 'localhost';
 
-  await app.listen(port, host, () =>
-    console.log(`Server started on ${host}:${port}`),
+  await app.listen(port, () =>
+    console.log(`Server started on ${port}`),
   );
 }
 void bootstrap();
