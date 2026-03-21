@@ -77,7 +77,7 @@
 .appLayout__menu {
   flex: 1;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   background: transparent !important;
   border: none !important;
 }

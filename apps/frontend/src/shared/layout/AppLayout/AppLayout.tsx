@@ -1,7 +1,8 @@
-import { Layout, Menu, Typography } from 'antd'
+import { Layout, Menu, Typography, Button, Space } from 'antd'
 import type { MenuProps } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { routes } from '@/router/routes'
+import { useAuthStore } from '@/store/auth/useAuthStore'
 import './AppLayout.css'
 
 const { Header, Content, Footer } = Layout
@@ -9,15 +10,32 @@ const { Header, Content, Footer } = Layout
 export function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useAuthStore()
 
-  const items: MenuProps['items'] = [
+  const menuItems: MenuProps['items'] = [
     { key: routes.home, label: 'Главная' },
     { key: routes.listings, label: 'Объявления' },
     { key: routes.support, label: 'Техподдержка' },
-    { key: routes.profile, label: 'Профиль' },
   ]
 
-  const selectedKeys = items
+  const authButtons = user ? (
+    <Space size="small">
+      <Button type="primary" size="small" onClick={() => navigate(routes.profile)}>
+        {user.name || 'Профиль'}
+      </Button>
+    </Space>
+  ) : (
+    <Space size="small">
+      <Button size="small" onClick={() => navigate(routes.login)}>
+        Войти
+      </Button>
+      <Button type="primary" size="small" onClick={() => navigate(routes.register)}>
+        Регистрация
+      </Button>
+    </Space>
+  )
+
+  const selectedKeys = menuItems
     ?.map((i) => i?.key)
     .filter((key): key is string => typeof key === 'string')
     .filter((key) => location.pathname === key || location.pathname.startsWith(key + '/'))
@@ -34,9 +52,10 @@ export function AppLayout() {
           mode="horizontal"
           theme="light"
           selectedKeys={selectedKeys?.length ? selectedKeys : [routes.home]}
-          items={items}
+          items={menuItems}
           onClick={(e) => navigate(e.key)}
         />
+        {authButtons}
       </Header>
 
       <Content className="appLayout__content">
