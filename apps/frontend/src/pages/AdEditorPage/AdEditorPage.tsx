@@ -37,6 +37,8 @@ type FormValues = {
   title: string;
   description?: string;
   category?: string;
+  subcategory?: string;
+  customSubcategory?: string;
   price?: number;
   salary?: number;
   currency?: 'RUB' | 'BYN' | 'UAH' | 'KZT';
@@ -69,6 +71,9 @@ export function AdEditorPage(props: Props) {
   const [jobPhotoUrls, setJobPhotoUrls] = useState<string[]>([]);
   const [photosError, setPhotosError] = useState<string | null>(null);
 
+  const [subcategories, setSubcategories] = useState<{ name: string }[]>([]);
+  const [subcategoriesLoading, setSubcategoriesLoading] = useState(false);
+
   // Temporary storage for photos before product is saved
   const [pendingPhotos, setPendingPhotos] = useState<{ file: RcFile; preview: string }[]>([]);
 
@@ -77,6 +82,26 @@ export function AdEditorPage(props: Props) {
   useEffect(() => {
     refreshMe();
   }, [refreshMe]);
+
+  // Load subcategories based on type
+  useEffect(() => {
+    const loadSubcategories = async () => {
+      setSubcategoriesLoading(true);
+      try {
+        const data = type === 'products'
+          ? await api.subcategories.getProducts()
+          : type === 'services'
+          ? await api.subcategories.getServices()
+          : await api.subcategories.getJobs();
+        setSubcategories(data as { name: string }[]);
+      } catch (e) {
+        console.error('Failed to load subcategories:', e);
+      } finally {
+        setSubcategoriesLoading(false);
+      }
+    };
+    loadSubcategories();
+  }, [type]);
 
   useEffect(() => {
     if (mode === "create") {
@@ -131,7 +156,7 @@ export function AdEditorPage(props: Props) {
         const category = typeof x.category === "string" ? x.category : "";
         const price = typeof x.price === "number" ? x.price : undefined;
         const salary = typeof x.salary === "number" ? x.salary : undefined;
-        const currency = typeof x.currency === "string" ? x.currency : 'RUB';
+        const currency = (typeof x.currency === "string" ? x.currency : 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT';
 
         const photoUrls = Array.isArray(x.photoUrls)
           ? x.photoUrls.filter((u): u is string => typeof u === "string")
@@ -190,7 +215,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price ?? 0,
-            currency: values.currency || 'RUB',
+            currency: (values.currency || 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT',
             userId: user.id,
             photoUrls: [],
           })) as unknown as { id?: number };
@@ -215,7 +240,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price,
-            currency: values.currency,
+            currency: (values.currency || 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT',
             userId: user.id,
           });
         }
@@ -228,7 +253,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price,
-            currency: values.currency || 'RUB',
+            currency: (values.currency || 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT',
             userId: user.id,
             photoUrls: [],
           })) as unknown as { id?: number };
@@ -253,7 +278,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price,
-            currency: values.currency,
+            currency: (values.currency || 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT',
             userId: user.id,
           });
         }
@@ -285,7 +310,7 @@ export function AdEditorPage(props: Props) {
               description: values.description,
               category: values.category,
               salary: values.salary,
-              currency: values.currency || 'RUB',
+              currency: (values.currency || 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT',
               userId: user.id,
               photoUrls: [],
             })) as unknown as { id?: number };
@@ -310,7 +335,7 @@ export function AdEditorPage(props: Props) {
               description: values.description,
               category: values.category,
               salary: values.salary,
-              currency: values.currency,
+              currency: (values.currency || 'RUB') as 'RUB' | 'BYN' | 'UAH' | 'KZT',
               userId: user.id,
             });
           }
@@ -551,6 +576,38 @@ export function AdEditorPage(props: Props) {
             <Form.Item name="category" label="Категория">
               <Input />
             </Form.Item>
+
+            <Form.Item label="Подкатегория">
+              <Select
+                placeholder="Выберите подкатегорию"
+                allowClear
+                showSearch
+                options={[
+                  ...subcategories.map(s => ({ label: s.name, value: s.name })),
+                  { label: 'Другая', value: '__custom__' },
+                ]}
+                value={form.getFieldValue('subcategory')}
+                onChange={(value) => {
+                  if (value === '__custom__') {
+                    form.setFieldValue('subcategory', '__custom__');
+                  } else {
+                    form.setFieldValue('subcategory', value);
+                    form.setFieldValue('customSubcategory', undefined);
+                  }
+                }}
+                loading={subcategoriesLoading}
+              />
+            </Form.Item>
+
+            {form.getFieldValue('subcategory') === '__custom__' && (
+              <Form.Item label="Своя подкатегория">
+                <Input
+                  placeholder="Введите название подкатегории"
+                  value={form.getFieldValue('customSubcategory')}
+                  onChange={(e) => form.setFieldValue('customSubcategory', e.target.value)}
+                />
+              </Form.Item>
+            )}
 
             {type === "products" ? (
               <Form.Item label="Фото товара (до 10)">

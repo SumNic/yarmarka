@@ -348,6 +348,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Мои товары */
+        get: operations["ProductsController_findMy"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products/{id}": {
         parameters: {
             query?: never;
@@ -379,6 +396,40 @@ export interface paths {
         put?: never;
         /** Создание услуги */
         post: operations["ServicesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/services/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Загрузить фото услуги (до 10 шт.) */
+        post: operations["ServicesController_uploadServicePhotos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/services/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Мои услуги */
+        get: operations["ServicesController_findMy"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -422,6 +473,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jobs/{id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Загрузить фото вакансии (до 10 шт.) */
+        post: operations["JobsController_uploadJobPhotos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jobs/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Мои вакансии */
+        get: operations["JobsController_findMy"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/jobs/{id}": {
         parameters: {
             query?: never;
@@ -459,6 +544,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/resumes/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Мои резюме */
+        get: operations["ResumesController_findMy"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/resumes/{id}": {
         parameters: {
             query?: never;
@@ -488,6 +590,291 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["SupportController_sendMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FavoritesController_getFavorites"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FavoritesController_addProduct"];
+        delete: operations["FavoritesController_removeProduct"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites/products/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FavoritesController_checkProduct"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites/services/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FavoritesController_addService"];
+        delete: operations["FavoritesController_removeService"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites/services/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FavoritesController_checkService"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FavoritesController_addJob"];
+        delete: operations["FavoritesController_removeJob"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/favorites/jobs/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FavoritesController_checkJob"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить все локации */
+        get: operations["LocationsController_findAll"];
+        put?: never;
+        /** Добавить локации (только для админа) */
+        post: operations["LocationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/locations/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список стран */
+        get: operations["LocationsController_getCountries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/locations/countries/{country}/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список регионов по стране */
+        get: operations["LocationsController_getRegionsByCountry"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/locations/countries/{country}/regions/{region}/localities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список районов по региону */
+        get: operations["LocationsController_getLocalitiesByRegion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/locations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить локацию по ID */
+        get: operations["LocationsController_findOne"];
+        put?: never;
+        post?: never;
+        /** Удалить локацию (только для админа) */
+        delete: operations["LocationsController_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/subcategories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить все подкатегории */
+        get: operations["SubcategoriesController_findAll"];
+        put?: never;
+        /** Добавить подкатегории (только для админа) */
+        post: operations["SubcategoriesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/subcategories/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить подкатегории для товаров */
+        get: operations["SubcategoriesController_getProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/subcategories/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить подкатегории для услуг */
+        get: operations["SubcategoriesController_getServices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/subcategories/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить подкатегории для вакансий */
+        get: operations["SubcategoriesController_getJobs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/subcategories/custom": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить пользовательские подкатегории */
+        get: operations["SubcategoriesController_getCustom"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -550,10 +937,30 @@ export interface components {
              */
             settlement?: string;
             /**
+             * @description Родовое поместье
+             * @example Родовое поместье "Луговое"
+             */
+            estate?: string;
+            /**
              * @description Фото/аватар (URL)
              * @example https://storage.yandexcloud.net/bucket/users/xxx.jpg
              */
             photoUrl?: string;
+            /**
+             * @description О себе
+             * @example Я занимаюсь пчеловодством уже 10 лет
+             */
+            about?: string;
+            /**
+             * @description Телефон для связи
+             * @example +79991234567
+             */
+            phone?: string;
+            /**
+             * @description Email для связи (отличный от логина)
+             * @example contact@example.com
+             */
+            contactEmail?: string;
         };
         UploadResultDto: {
             /** @example users/uuid.jpg */
@@ -613,10 +1020,30 @@ export interface components {
              */
             settlement?: string;
             /**
+             * @description Родовое поместье
+             * @example Родовое поместье "Луговое"
+             */
+            estate?: string;
+            /**
              * @description Фото/аватар (URL)
              * @example https://storage.yandexcloud.net/bucket/users/xxx.jpg
              */
             photoUrl?: string;
+            /**
+             * @description О себе
+             * @example Я занимаюсь пчеловодством уже 10 лет
+             */
+            about?: string;
+            /**
+             * @description Телефон для связи
+             * @example +79991234567
+             */
+            phone?: string;
+            /**
+             * @description Email для связи (отличный от логина)
+             * @example contact@example.com
+             */
+            contactEmail?: string;
         };
         AddRoleDto: {
             /**
@@ -712,6 +1139,13 @@ export interface components {
              */
             price: number;
             /**
+             * @description Валюта (RUB, BYN, UAH, KZT)
+             * @default RUB
+             * @example RUB
+             * @enum {string}
+             */
+            currency: "RUB" | "BYN" | "UAH" | "KZT";
+            /**
              * @description Категория
              * @example Еда
              */
@@ -745,6 +1179,13 @@ export interface components {
              * @example 500
              */
             price?: number;
+            /**
+             * @description Валюта (RUB, BYN, UAH, KZT)
+             * @default RUB
+             * @example RUB
+             * @enum {string}
+             */
+            currency: "RUB" | "BYN" | "UAH" | "KZT";
             /**
              * @description Категория
              * @example Еда
@@ -780,13 +1221,22 @@ export interface components {
              */
             price?: number;
             /**
+             * @description Валюта (RUB, BYN, UAH, KZT)
+             * @default RUB
+             * @example RUB
+             * @enum {string}
+             */
+            currency: "RUB" | "BYN" | "UAH" | "KZT";
+            /**
              * @description Категория
              * @example Красота
              */
             category?: string;
             /**
              * @description Ссылки на фото услуги (до 10 шт.)
-             * @example ["https://storage.yandexcloud.net/bucket/services/xxx.jpg"]
+             * @example [
+             *       "https://storage.yandexcloud.net/bucket/services/xxx.jpg"
+             *     ]
              */
             photoUrls?: string[];
             /**
@@ -812,13 +1262,22 @@ export interface components {
              */
             price?: number;
             /**
+             * @description Валюта (RUB, BYN, UAH, KZT)
+             * @default RUB
+             * @example RUB
+             * @enum {string}
+             */
+            currency: "RUB" | "BYN" | "UAH" | "KZT";
+            /**
              * @description Категория
              * @example Красота
              */
             category?: string;
             /**
              * @description Ссылки на фото услуги (до 10 шт.)
-             * @example ["https://storage.yandexcloud.net/bucket/services/xxx.jpg"]
+             * @example [
+             *       "https://storage.yandexcloud.net/bucket/services/xxx.jpg"
+             *     ]
              */
             photoUrls?: string[];
             /**
@@ -844,13 +1303,22 @@ export interface components {
              */
             salary?: number;
             /**
+             * @description Валюта (RUB, BYN, UAH, KZT)
+             * @default RUB
+             * @example RUB
+             * @enum {string}
+             */
+            currency: "RUB" | "BYN" | "UAH" | "KZT";
+            /**
              * @description Категория
              * @example Строительство
              */
             category?: string;
             /**
              * @description Ссылки на фото (до 10 шт.)
-             * @example ["https://storage.yandexcloud.net/bucket/jobs/xxx.jpg"]
+             * @example [
+             *       "https://storage.yandexcloud.net/bucket/jobs/xxx.jpg"
+             *     ]
              */
             photoUrls?: string[];
             /**
@@ -876,13 +1344,22 @@ export interface components {
              */
             salary?: number;
             /**
+             * @description Валюта (RUB, BYN, UAH, KZT)
+             * @default RUB
+             * @example RUB
+             * @enum {string}
+             */
+            currency: "RUB" | "BYN" | "UAH" | "KZT";
+            /**
              * @description Категория
              * @example Строительство
              */
             category?: string;
             /**
              * @description Ссылки на фото (до 10 шт.)
-             * @example ["https://storage.yandexcloud.net/bucket/jobs/xxx.jpg"]
+             * @example [
+             *       "https://storage.yandexcloud.net/bucket/jobs/xxx.jpg"
+             *     ]
              */
             photoUrls?: string[];
             /**
@@ -951,6 +1428,79 @@ export interface components {
              * @example Сообщение
              */
             message: string;
+        };
+        LocationItemDto: {
+            /**
+             * @description Страна
+             * @example Россия
+             */
+            country: string;
+            /**
+             * @description Регион
+             * @example Московская область
+             */
+            region?: string;
+            /**
+             * @description Район/Населенный пункт
+             * @example Истринский
+             */
+            locality?: string;
+        };
+        CreateLocationsDto: {
+            /**
+             * @description Массив локаций для добавления
+             * @example [
+             *       {
+             *         "country": "Россия",
+             *         "region": "Московская область",
+             *         "locality": "Истринский"
+             *       },
+             *       {
+             *         "country": "Россия",
+             *         "region": "Чувашия",
+             *         "locality": "Алатырский"
+             *       }
+             *     ]
+             */
+            locations: components["schemas"]["LocationItemDto"][];
+        };
+        SubcategoryItemDto: {
+            /**
+             * @description Название подкатегории
+             * @example Эко-товары
+             */
+            name: string;
+            /**
+             * @description Тип категории
+             * @example product
+             * @enum {string}
+             */
+            type: "product" | "service" | "job";
+            /**
+             * @description Пользовательская подкатегория
+             * @example false
+             */
+            isCustom?: boolean;
+        };
+        CreateSubcategoriesDto: {
+            /**
+             * @description Массив подкатегорий для добавления
+             * @example [
+             *       {
+             *         "name": "Эко-товары",
+             *         "type": "product"
+             *       },
+             *       {
+             *         "name": "Ремесленные изделия",
+             *         "type": "product"
+             *       },
+             *       {
+             *         "name": "Консультации",
+             *         "type": "service"
+             *       }
+             *     ]
+             */
+            subcategories: components["schemas"]["SubcategoryItemDto"][];
         };
     };
     responses: never;
@@ -1518,6 +2068,24 @@ export interface operations {
             };
         };
     };
+    ProductsController_findMy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Список товаров пользователя */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ProductsController_findOne: {
         parameters: {
             query?: never;
@@ -1622,6 +2190,51 @@ export interface operations {
         responses: {
             /** @description Услуга создана */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ServicesController_uploadServicePhotos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadResultDto"][];
+                };
+            };
+        };
+    };
+    ServicesController_findMy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Список услуг пользователя */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1740,6 +2353,51 @@ export interface operations {
             };
         };
     };
+    JobsController_uploadJobPhotos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadResultDto"][];
+                };
+            };
+        };
+    };
+    JobsController_findMy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Список вакансий пользователя */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     JobsController_findOne: {
         parameters: {
             query?: never;
@@ -1851,6 +2509,24 @@ export interface operations {
             };
         };
     };
+    ResumesController_findMy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Список резюме пользователя */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ResumesController_findOne: {
         parameters: {
             query?: never;
@@ -1936,6 +2612,437 @@ export interface operations {
         };
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_getFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_addProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_removeProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_checkProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_addService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_removeService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_checkService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_addJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_removeJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_checkJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateLocationsDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_getCountries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_getRegionsByCountry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                country: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_getLocalitiesByRegion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                country: string;
+                region: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LocationsController_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubcategoriesController_findAll: {
+        parameters: {
+            query?: {
+                /** @description Фильтр по типу категории */
+                type?: "product" | "service" | "job";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubcategoriesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSubcategoriesDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubcategoriesController_getProducts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubcategoriesController_getServices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubcategoriesController_getJobs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubcategoriesController_getCustom: {
+        parameters: {
+            query: {
+                type: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

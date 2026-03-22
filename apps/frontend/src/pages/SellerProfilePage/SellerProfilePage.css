@@ -1,0 +1,220 @@
+.sellerProfilePage {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.sellerProfilePage__header {
+  margin-bottom: 24px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.sellerProfilePage__profile {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 24px;
+}
+
+.sellerProfilePage__avatar {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 3px solid var(--color-border);
+}
+
+.sellerProfilePage__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sellerProfilePage__avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.sellerProfilePage__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sellerProfilePage__name {
+  margin: 0 0 12px 0 !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sellerProfilePage__about {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sellerProfilePage__location {
+  max-width: 600px;
+}
+
+.sellerProfilePage__location .ant-descriptions-item-label {
+  font-weight: var(--font-weight-medium);
+}
+
+.sellerProfilePage__ads {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.sellerProfilePage__grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.sellerProfilePage__gridItem {
+  width: 100%;
+  cursor: pointer;
+}
+
+.sellerProfilePage__card {
+  height: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+}
+
+.sellerProfilePage__card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-light);
+}
+
+.sellerProfilePage__card:hover .sellerProfilePage__image {
+  transform: scale(1.05);
+}
+
+.sellerProfilePage__imageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.sellerProfilePage__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform var(--transition-slow);
+}
+
+.sellerProfilePage__imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f5f5f5 100%);
+}
+
+.sellerProfilePage__cardBody {
+  padding: 12px;
+}
+
+.sellerProfilePage__cardTitle {
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--color-text-primary) !important;
+  margin-bottom: 8px !important;
+  font-size: 1rem !important;
+}
+
+.sellerProfilePage__price {
+  font-weight: var(--font-weight-bold);
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sellerProfilePage__profile {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .sellerProfilePage__avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .sellerProfilePage__avatarPlaceholder {
+    font-size: 40px;
+  }
+
+  .sellerProfilePage__name {
+    font-size: 1.5rem !important;
+  }
+
+  .sellerProfilePage__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .sellerProfilePage__card .ant-card-body {
+    padding: 8px;
+  }
+
+  .sellerProfilePage__cardTitle {
+    font-size: 0.85rem !important;
+  }
+
+  .sellerProfilePage__price {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sellerProfilePage__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .sellerProfilePage__cardBody {
+    padding: 8px;
+  }
+
+  .sellerProfilePage__cardTitle {
+    font-size: 0.75rem !important;
+  }
+
+  .sellerProfilePage__price {
+    font-size: 0.8rem;
+  }
+}

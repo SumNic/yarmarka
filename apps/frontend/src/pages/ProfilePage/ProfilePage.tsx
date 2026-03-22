@@ -6,12 +6,14 @@ import {
   Descriptions,
   Form,
   Input,
+  Select,
   Space,
-  Typography,
-  Upload,
+  Spin,
+  Switch,
   Tabs,
   Empty,
-  Spin,
+  Typography,
+  Upload,
 } from "antd";
 import type { UploadProps } from "antd";
 import { useEffect, useMemo, useState } from "react";
@@ -20,6 +22,7 @@ import { routes } from "@/router/routes";
 import { api } from "@/shared/api/api";
 import { useAuthStore } from "@/store/auth/useAuthStore";
 import type { components } from "@/utils/api";
+import { useTheme } from "@/hooks/useTheme";
 import { ChangePasswordForm } from "./ChangePasswordForm";
 import "./ProfilePage.css";
 
@@ -31,6 +34,7 @@ type ProfileFormValues = {
   region?: string;
   district?: string;
   settlement?: string;
+  estate?: string;
   about?: string;
   phone?: string;
   contactEmail?: string;
@@ -48,6 +52,7 @@ type AdItem = {
 export function ProfilePage() {
   const navigate = useNavigate();
   const { user, isLoading, error, refreshMe, logout } = useAuthStore();
+  const { isDark, toggleTheme } = useTheme();
 
   const [form] = Form.useForm<ProfileFormValues>();
   const [isEdit, setIsEdit] = useState(false);
@@ -66,6 +71,12 @@ export function ProfilePage() {
   const [isMessageSent, setIsMessageSent] = useState(false);
   const [supportMessageError, setSupportMessageError] = useState<string | null>(null);
 
+  // Location state
+  const [countries, setCountries] = useState<string[]>([]);
+  const [regions, setRegions] = useState<string[]>([]);
+  const [localities, setLocalities] = useState<string[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(false);
+
   const initialValues = useMemo<ProfileFormValues>(() => {
     return {
       name: user?.name,
@@ -73,6 +84,7 @@ export function ProfilePage() {
       region: user?.region,
       district: user?.district,
       settlement: user?.settlement,
+      estate: user?.estate || '',
       about: user?.about || '',
       phone: user?.phone || '',
       contactEmail: user?.contactEmail || '',
@@ -87,6 +99,48 @@ export function ProfilePage() {
     if (!user) return;
     form.setFieldsValue(initialValues);
   }, [form, initialValues, user]);
+
+  // Load locations
+  useEffect(() => {
+    const loadLocations = async () => {
+      setLocationsLoading(true);
+      try {
+        const countriesData = await api.locations.getCountries();
+        setCountries(countriesData);
+      } catch (e) {
+        console.error('Failed to load locations:', e);
+      } finally {
+        setLocationsLoading(false);
+      }
+    };
+    loadLocations();
+  }, []);
+
+  // Load regions when country changes
+  useEffect(() => {
+    const country = form.getFieldValue('country');
+    if (!country) {
+      setRegions([]);
+      setLocalities([]);
+      return;
+    }
+
+    const loadRegions = async () => {
+      try {
+        const regionsData = await api.locations.getRegionsByCountry(country);
+        setRegions(regionsData);
+        // Reset district if it's not in the new regions
+        const currentDistrict = form.getFieldValue('district');
+        if (currentDistrict && !regionsData.includes(currentDistrict)) {
+          form.setFieldValue('district', undefined);
+        }
+      } catch (e) {
+        console.error('Failed to load regions:', e);
+        setRegions([]);
+      }
+    };
+    loadRegions();
+  }, [form, countries]);
 
   useEffect(() => {
     if (!user) return;
@@ -141,9 +195,10 @@ export function ProfilePage() {
         region: values.region,
         district: values.district,
         settlement: values.settlement,
+        estate: values.estate,
         about: values.about,
         phone: values.phone,
-        contactEmail: values.contactEmail,
+        contactEmail: values.contactEmail || undefined,
       });
 
       setIsEdit(false);
@@ -273,13 +328,21 @@ export function ProfilePage() {
                 <Text type="secondary">{user.email ?? ""}</Text>
               </div>
             </Space>
-            <Space wrap>
+            <Space wrap style={{ marginTop: 12 }}>
               <Button onClick={() => navigate(routes.adCreate)}>
                 Создать объявление
               </Button>
               <Button danger loading={isLoading} onClick={() => logout()}>
                 Выйти
               </Button>
+              <Text style={{ marginLeft: 16 }}>Сменить тему</Text>
+              <Switch
+                className="profilePage__themeSwitch"
+                checked={isDark}
+                onChange={toggleTheme}
+                checkedChildren="🌙"
+                unCheckedChildren="☀️"
+              />
             </Space>
           </Space>
         </Card>
@@ -331,7 +394,16 @@ export function ProfilePage() {
                 name="country"
                 rules={[{ max: 120, message: "Максимум 120 символов" }]}
               >
-                <Input placeholder="Например: Россия" />
+                <Select
+                  placeholder="Выберите страну"
+                  allowClear
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={countries.map(c => ({ label: c, value: c }))}
+                  loading={locationsLoading}
+                />
               </Form.Item>
 
               <Form.Item
@@ -339,7 +411,17 @@ export function ProfilePage() {
                 name="region"
                 rules={[{ max: 120, message: "Максимум 120 символов" }]}
               >
-                <Input placeholder="Например: Московская область" />
+                <Select
+                  placeholder="Выберите регион"
+                  allowClear
+                  showSearch
+                  disabled={!form.getFieldValue('country')}
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={regions.map(r => ({ label: r, value: r }))}
+                  loading={locationsLoading}
+                />
               </Form.Item>
 
               <Form.Item
@@ -356,6 +438,14 @@ export function ProfilePage() {
                 rules={[{ max: 200, message: "Максимум 200 символов" }]}
               >
                 <Input placeholder="Название поселения (если есть)" />
+              </Form.Item>
+
+              <Form.Item
+                label="Родовое поместье"
+                name="estate"
+                rules={[{ max: 200, message: "Максимум 200 символов" }]}
+              >
+                <Input placeholder="Название вашего родового поместья" />
               </Form.Item>
 
               <Form.Item
@@ -401,6 +491,9 @@ export function ProfilePage() {
               </Descriptions.Item>
               <Descriptions.Item label="Поселение">
                 {user.settlement ?? "—"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Родовое поместье">
+                {user.estate ?? "—"}
               </Descriptions.Item>
               <Descriptions.Item label="О себе">
                 {user.about ?? "—"}
@@ -511,7 +604,7 @@ function renderAdsList(items: AdItem[], type: 'product' | 'service' | 'job' | 'r
   }
 
   return (
-    <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+    <Space orientation="vertical" size={12} style={{ width: '100%' }} className="profilePage__adsList">
       {items.map((item) => (
         <Card
           key={item.id}

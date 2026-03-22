@@ -69,6 +69,7 @@ export class UsersService {
       isEstate: dto.isEstate,
       estateType: dto.estateType,
       settlement: dto.settlement,
+      estate: dto.estate,
     };
 
     const user = await this.userRepo.create(data);
@@ -105,6 +106,10 @@ export class UsersService {
       isEstate: dto.isEstate,
       estateType: dto.estateType,
       settlement: dto.settlement,
+      estate: dto.estate,
+      about: dto.about,
+      phone: dto.phone,
+      contactEmail: dto.contactEmail
     };
 
     if (dto.password) {

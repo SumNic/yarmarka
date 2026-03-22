@@ -9,7 +9,6 @@ import {
   Spin,
   Typography,
   Modal,
-  Input,
 } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -39,6 +38,13 @@ type UserContactData = {
   phone?: string | null;
   contactEmail?: string | null;
   email?: string;
+  photoUrl?: string | null;
+  about?: string | null;
+  country?: string;
+  region?: string;
+  district?: string;
+  settlement?: string;
+  estate?: string;
 };
 
 function ensureListingType(value: unknown): ListingType {
@@ -238,7 +244,6 @@ export function AdViewPage() {
     );
   }
 
-  const hasContact = !!(seller?.phone || seller?.contactEmail || seller?.email);
   const showPrice = typeof data.price === "number" || typeof data.salary === "number";
   const priceValue = typeof data.price === "number" ? data.price : data.salary;
   const priceLabel = typeof data.price === "number" ? "Цена:" : "Оплата:";
@@ -348,6 +353,38 @@ export function AdViewPage() {
                 </div>
               ) : (
                 <Text type="secondary">Описание не указано</Text>
+              )}
+
+              {/* Блок с информацией о создателе */}
+              {seller && (
+                <div className="adViewPage__sellerInfo">
+                  <Title level={5}>О создателе объявления</Title>
+                  <div className="adViewPage__sellerCard">
+                    <div className="adViewPage__sellerAvatar">
+                      {seller.photoUrl ? (
+                        <img src={seller.photoUrl} alt={seller.name || 'Аватар'} />
+                      ) : (
+                        <div className="adViewPage__sellerAvatarPlaceholder">
+                          {(seller.name || 'U').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="adViewPage__sellerDetails">
+                      <Text strong className="adViewPage__sellerName">{seller.name || 'Без имени'}</Text>
+                      {seller.about && (
+                        <Text className="adViewPage__sellerAbout">{seller.about}</Text>
+                      )}
+                      <Button
+                        type="primary"
+                        size="small"
+                        className="adViewPage__sellerAdsBtn"
+                        onClick={() => navigate(`/seller/${seller.id}`)}
+                      >
+                        Все объявления
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               )}
 
               <Space className="adViewPage__actions">

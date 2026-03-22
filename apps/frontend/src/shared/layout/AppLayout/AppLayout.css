@@ -130,7 +130,7 @@
 .appLayout__content {
   padding: 24px 12px;
   min-height: calc(100vh - var(--header-height) - 80px);
-  background: transparent;
+  background: var(--color-surface);
 }
 
 /* Footer */

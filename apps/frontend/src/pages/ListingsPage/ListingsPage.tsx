@@ -1,11 +1,13 @@
 import {
+  Button,
   Card,
   Carousel,
+  Drawer,
   Input,
   Segmented,
+  Select,
   Space,
   Typography,
-  Button,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -16,6 +18,8 @@ import { DEFAULT_IMAGE } from "@/utils/constants";
 import { useAuthStore } from "@/store/auth/useAuthStore";
 
 const { Title, Text } = Typography;
+
+type ListingTypeExtended = ListingType | 'all';
 
 type ListingItem = {
   id?: number;
@@ -29,9 +33,10 @@ type ListingItem = {
   createdAt?: string;
   isFavorite?: boolean;
   currency?: string;
+  type?: ListingType;
 };
 
-function toListingItems(payload: unknown): ListingItem[] {
+function toListingItems(payload: unknown, type?: ListingType): ListingItem[] {
   if (!Array.isArray(payload)) return [];
   return payload
     .map((x) =>
@@ -54,13 +59,39 @@ function toListingItems(payload: unknown): ListingItem[] {
         : [],
       createdAt: typeof x.createdAt === "string" ? x.createdAt : undefined,
       currency: typeof x.currency === "string" ? x.currency : undefined,
+      type: (x._adType as ListingType) || type,
     }));
 }
 
-async function loadByType(type: ListingType) {
-  if (type === "products") return api.products.list();
-  if (type === "services") return api.services.list();
-  return api.jobs.list();
+async function loadByType(type: ListingTypeExtended) {
+  if (type === "products") {
+    const data = await api.products.list();
+    return { data, type: "products" as ListingType };
+  }
+  if (type === "services") {
+    const data = await api.services.list();
+    return { data, type: "services" as ListingType };
+  }
+  if (type === "jobs") {
+    const data = await api.jobs.list();
+    return { data, type: "jobs" as ListingType };
+  }
+  // Для 'all' загружаем все объявления с указанием типа
+  const [products, services, jobs] = await Promise.all([
+    api.products.list(),
+    api.services.list(),
+    api.jobs.list(),
+  ]);
+  
+  // Добавляем тип к каждому объявлению
+  const productsWithType = (products as any[]).map(p => ({ ...p, _adType: 'products' }));
+  const servicesWithType = (services as any[]).map(s => ({ ...s, _adType: 'services' }));
+  const jobsWithType = (jobs as any[]).map(j => ({ ...j, _adType: 'jobs' }));
+  
+  return { 
+    data: [...productsWithType, ...servicesWithType, ...jobsWithType], 
+    type: null // смешанный тип
+  };
 }
 
 export function ListingsPage() {
@@ -68,12 +99,25 @@ export function ListingsPage() {
   const { user } = useAuthStore();
 
   const initialType =
-    (searchParams.get("type") as ListingType | null) ?? "products";
+    (searchParams.get("type") as ListingTypeExtended | null) ?? "all";
 
-  const [type, setType] = useState<ListingType>(initialType);
+  const [type, setType] = useState<ListingTypeExtended>(initialType);
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<ListingItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Filter state
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<{
+    country?: string;
+    region?: string;
+    district?: string;
+    subcategory?: string;
+  }>({});
+  const [countries, setCountries] = useState<string[]>([]);
+  const [regions, setRegions] = useState<string[]>([]);
+  const [subcategories, setSubcategories] = useState<{ name: string }[]>([]);
+  const [filtersLoading, setFiltersLoading] = useState(false);
 
   const loadFavorites = async (itemsList: ListingItem[]) => {
     if (!user?.id) return itemsList;
@@ -130,8 +174,13 @@ export function ListingsPage() {
     if (!createdAt) return "";
     const date = new Date(createdAt);
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    
+    // Получаем даты без времени для сравнения дней
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffMs = nowOnly.getTime() - dateOnly.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
     const timeStr = date.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
 
     if (diffDays === 0) {
@@ -178,20 +227,14 @@ export function ListingsPage() {
   };
 
   useEffect(() => {
-    setSearchParams((prev) => {
-      prev.set("type", type);
-      return prev;
-    });
-  }, [type, setSearchParams]);
-
-  useEffect(() => {
     let cancelled = false;
 
     const run = async () => {
       try {
-        const data = await loadByType(type);
+        const result = await loadByType(type);
         if (cancelled) return;
-        const itemsList = toListingItems(data);
+        
+        const itemsList = toListingItems(result.data);
         const itemsWithFavs = await loadFavorites(itemsList);
         if (cancelled) return;
         setItems(itemsWithFavs);
@@ -212,15 +255,83 @@ export function ListingsPage() {
     };
   }, [type]);
 
+  // Load filter data
+  useEffect(() => {
+    const loadFilterData = async () => {
+      setFiltersLoading(true);
+      try {
+        const [countriesData, subcategoriesData] = await Promise.all([
+          api.locations.getCountries(),
+          type === 'all' 
+            ? api.subcategories.list()
+            : type === 'products'
+            ? api.subcategories.getProducts()
+            : type === 'services'
+            ? api.subcategories.getServices()
+            : api.subcategories.getJobs(),
+        ]);
+        setCountries(countriesData);
+        setSubcategories(subcategoriesData as { name: string }[]);
+      } catch (e) {
+        console.error('Failed to load filter data:', e);
+      } finally {
+        setFiltersLoading(false);
+      }
+    };
+    loadFilterData();
+  }, [type]);
+
+  useEffect(() => {
+    // Load regions when country changes in filter
+    const country = filters.country;
+    if (!country) {
+      setRegions([]);
+      return;
+    }
+
+    const loadRegions = async () => {
+      try {
+        const regionsData = await api.locations.getRegionsByCountry(country);
+        setRegions(regionsData);
+      } catch (e) {
+        console.error('Failed to load regions:', e);
+        setRegions([]);
+      }
+    };
+    loadRegions();
+  }, [filters.country]);
+
   const filtered = useMemo(() => {
+    let result = items;
+
+    // Search query filter
     const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((x) => {
-      const title = (x.title ?? "").toLowerCase();
-      const description = (x.description ?? "").toLowerCase();
-      return title.includes(q) || description.includes(q);
-    });
-  }, [items, query]);
+    if (q) {
+      result = result.filter((x) => {
+        const title = (x.title ?? "").toLowerCase();
+        const description = (x.description ?? "").toLowerCase();
+        return title.includes(q) || description.includes(q);
+      });
+    }
+
+    // Location filters
+    if (filters.country) {
+      result = result.filter((x) => x.userId); // TODO: filter by actual user country
+    }
+    if (filters.region) {
+      result = result.filter((x) => x.userId); // TODO: filter by actual user region
+    }
+    if (filters.district) {
+      result = result.filter((x) => x.userId); // TODO: filter by actual user district
+    }
+
+    // Subcategory filter
+    if (filters.subcategory) {
+      result = result.filter((x) => x.category === filters.subcategory);
+    }
+
+    return result;
+  }, [items, query, filters]);
 
   return (
     <div className="listingsPage">
@@ -230,14 +341,18 @@ export function ListingsPage() {
         </Title>
 
         <Space wrap>
-          <Segmented<ListingType>
+          <Segmented<ListingTypeExtended>
             value={type}
             options={[
+              { label: "Все", value: "all" },
               { label: "Товары", value: "products" },
               { label: "Услуги", value: "services" },
               { label: "Работа", value: "jobs" },
             ]}
-            onChange={(v) => setType(v)}
+            onChange={(v) => {
+              setType(v);
+              setSearchParams(v === "all" ? {} : { type: v });
+            }}
           />
           <Input
             className="listingsPage__search"
@@ -246,6 +361,9 @@ export function ListingsPage() {
             onChange={(e) => setQuery(e.target.value)}
             allowClear
           />
+          <Button onClick={() => setFilterOpen(true)}>
+            Фильтры
+          </Button>
         </Space>
 
         {error ? <Text type="danger">{error}</Text> : null}
@@ -263,7 +381,8 @@ export function ListingsPage() {
                   e.stopPropagation();
                   return;
                 }
-                window.location.href = `/ads/${type}/${item.id}`;
+                const urlType = item.type || 'products';
+                window.location.href = `/ads/${urlType}/${item.id}`;
               }}
             >
               <Card hoverable className="listingsPage__card">
@@ -335,6 +454,84 @@ export function ListingsPage() {
           </div>
         )}
       </div>
+
+      <Drawer
+        title="Фильтры"
+        placement="right"
+        onClose={() => setFilterOpen(false)}
+        open={filterOpen}
+        size={360}
+      >
+        <Space orientation="vertical" size={16} style={{ width: '100%' }}>
+          <div>
+            <Text strong style={{ display: 'block', marginBottom: 8 }}>Местоположение</Text>
+            <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+              <Select
+                placeholder="Страна"
+                allowClear
+                showSearch
+                style={{ width: '100%' }}
+                options={countries.map(c => ({ label: c, value: c }))}
+                value={filters.country}
+                onChange={(value) => setFilters({ ...filters, country: value, region: undefined, district: undefined })}
+                loading={filtersLoading}
+              />
+              <Select
+                placeholder="Регион"
+                allowClear
+                showSearch
+                style={{ width: '100%' }}
+                disabled={!filters.country}
+                options={regions.map(r => ({ label: r, value: r }))}
+                value={filters.region}
+                onChange={(value) => setFilters({ ...filters, region: value, district: undefined })}
+                loading={filtersLoading}
+              />
+              <Input
+                placeholder="Район"
+                value={filters.district}
+                onChange={(e) => setFilters({ ...filters, district: e.target.value })}
+              />
+            </Space>
+          </div>
+
+          <div>
+            <Text strong style={{ display: 'block', marginBottom: 8 }}>Подкатегория</Text>
+            <Select
+              placeholder="Выберите подкатегорию"
+              allowClear
+              showSearch
+              style={{ width: '100%' }}
+              options={subcategories.map(s => ({ label: s.name, value: s.name }))}
+              value={filters.subcategory}
+              onChange={(value) => setFilters({ ...filters, subcategory: value })}
+              loading={filtersLoading}
+            />
+          </div>
+
+          <Space style={{ width: '100%' }} orientation="vertical">
+            <Button
+              type="primary"
+              block
+              onClick={() => {
+                // Apply filters - TODO: implement actual filtering logic
+                setFilterOpen(false);
+              }}
+            >
+              Применить
+            </Button>
+            <Button
+              block
+              onClick={() => {
+                setFilters({});
+                setFilterOpen(false);
+              }}
+            >
+              Сбросить
+            </Button>
+          </Space>
+        </Space>
+      </Drawer>
     </div>
   );
 }

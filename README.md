@@ -121,3 +121,6 @@
 
 Добро пожаловать в пространство Родовой Ярмарки.
 Здесь встречаются люди, создающие будущее.
+
+## Запуск миграций
+```docker compose exec backend npx sequelize-cli db:migrate --env production```

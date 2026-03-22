@@ -4,6 +4,9 @@ import { routes } from './routes'
 import { AppLayout } from '@/shared/layout/AppLayout/AppLayout'
 import { HomePage } from '@/pages/HomePage/HomePage'
 import { ListingsPage } from '@/pages/ListingsPage/ListingsPage'
+import { FavoritesPage } from '@/pages/FavoritesPage/FavoritesPage'
+import { SellerProfilePage } from '@/pages/SellerProfilePage/SellerProfilePage'
+import { AdminPage } from '@/pages/AdminPage/AdminPage'
 import { LoginPage } from '@/pages/auth/LoginPage/LoginPage'
 import { RegisterPage } from '@/pages/auth/RegisterPage/RegisterPage'
 import { RequestPasswordResetPage } from '@/pages/auth/RequestPasswordResetPage/RequestPasswordResetPage'
@@ -18,6 +21,9 @@ export function AppRouter() {
       <Route element={<AppLayout />}>
         <Route path={routes.home} element={<HomePage />} />
         <Route path={routes.listings} element={<ListingsPage />} />
+        <Route path={routes.favorites} element={<FavoritesPage />} />
+        <Route path={routes.seller} element={<SellerProfilePage />} />
+        <Route path={routes.admin} element={<AdminPage />} />
         <Route path={routes.login} element={<LoginPage />} />
         <Route path={routes.register} element={<RegisterPage />} />
         <Route path={routes.requestPasswordReset} element={<RequestPasswordResetPage />} />

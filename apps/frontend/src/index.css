@@ -207,29 +207,44 @@ img {
 }
 
 /* Light Theme (default) */
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-background: #faf8f5;
-    --color-surface: #ffffff;
-    --color-text-primary: #1a1a1a;
-    --color-text-secondary: #5a5a5a;
-  }
+:root {
+  --color-background: #faf8f5;
+  --color-surface: #f5f3f0;
+  --color-surface-elevated: #ffffff;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #5a5a5a;
 }
 
-/* Dark Theme Support */
+/* Dark Theme Support - via data-theme attribute */
+[data-theme='dark'] {
+  --color-background: #1a1a1a;
+  --color-surface: #2a2a2a;
+  --color-surface-elevated: #323232;
+
+  --color-text-primary: #f0f0f0;
+  --color-text-secondary: #b0b0b0;
+  --color-text-muted: #707070;
+
+  --color-border: #3a3a3a;
+  --color-border-light: #2a2a2a;
+
+  --gradient-hero: linear-gradient(135deg, #1a2a1a 0%, #2a2a1a 50%, #1a1a1a 100%);
+}
+
+/* Fallback to system preference if no data-theme attribute */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --color-background: #1a1a1a;
     --color-surface: #242424;
     --color-surface-elevated: #2a2a2a;
-    
+
     --color-text-primary: #f0f0f0;
     --color-text-secondary: #b0b0b0;
     --color-text-muted: #707070;
-    
+
     --color-border: #3a3a3a;
     --color-border-light: #2a2a2a;
-    
+
     --gradient-hero: linear-gradient(135deg, #1a2a1a 0%, #2a2a1a 50%, #1a1a1a 100%);
   }
 }

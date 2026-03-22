@@ -228,6 +228,122 @@
   }
 }
 
+/* Seller Info Block */
+.adViewPage__sellerInfo {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--color-background);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+}
+
+.adViewPage__sellerInfo .ant-typography {
+  margin-bottom: 16px !important;
+}
+
+.adViewPage__sellerCard {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.adViewPage__sellerAvatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+}
+
+.adViewPage__sellerAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.adViewPage__sellerAvatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.adViewPage__sellerDetails {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adViewPage__sellerName {
+  font-size: 1.1rem !important;
+}
+
+.adViewPage__sellerAbout {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.adViewPage__sellerAdsBtn {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .adViewPage {
+    padding: 8px 16px 16px;
+  }
+
+  .adViewPage__carousel .slick-slide {
+    height: 250px;
+  }
+
+  .adViewPage__card .ant-card-body {
+    padding: 16px;
+  }
+
+  .adViewPage__title {
+    font-size: 1.4rem !important;
+  }
+
+  .adViewPage__price {
+    font-size: 1.25rem !important;
+  }
+
+  .adViewPage__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .adViewPage__actions .ant-btn {
+    width: 100%;
+  }
+
+  .adViewPage__sellerCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .adViewPage__sellerAdsBtn {
+    align-self: center;
+  }
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {

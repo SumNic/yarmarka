@@ -3,6 +3,14 @@
   margin: 0 auto;
 }
 
+.profilePage__themeSwitch {
+  margin-right: 8px;
+}
+
+.profilePage__themeSwitch .ant-switch-checked {
+  background: linear-gradient(135deg, #2e7d32 0%, #ff9800 100%);
+}
+
 .profileAvatar {
   position: relative;
   width: 64px;
@@ -34,5 +42,14 @@
 
 .profileAvatar:hover .profileAvatar__overlay {
   opacity: 1;
+}
+
+/* Мои объявления - карточки */
+.profilePage__adsList .ant-card-body {
+  text-align: left;
+}
+
+.profilePage__adsList .ant-typography {
+  text-align: left;
 }
 

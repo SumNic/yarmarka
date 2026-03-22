@@ -10,6 +10,8 @@ import { Service } from 'src/common/models/Service.model';
 import { Job } from 'src/common/models/Job.model';
 import { Resume } from 'src/common/models/Resume.model';
 import { Favorite } from 'src/common/models/Favorite.model';
+import { Location } from 'src/common/models/Location.model';
+import { Subcategory } from 'src/common/models/Subcategory.model';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from 'src/products/products.module';
@@ -24,6 +26,8 @@ import { SupportController } from './support/support.controller';
 import { SupportService } from './support/support.service';
 import { SupportModule } from './support/support.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { LocationsModule } from './locations/locations.module';
+import { SubcategoriesModule } from './subcategories/subcategories.module';
 
 @Module({
   imports: [
@@ -72,7 +76,7 @@ import { FavoritesModule } from './favorites/favorites.module';
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('POSTGRES_URI'),
         dialect: 'postgres',
-        models: [User, Product, Service, Job, Resume, Role, UserRoles, Favorite],
+        models: [User, Product, Service, Job, Resume, Role, UserRoles, Favorite, Location, Subcategory],
         autoLoadModels: false,
         synchronize: false,
       }),
@@ -87,6 +91,8 @@ import { FavoritesModule } from './favorites/favorites.module';
     RolesModule,
     SupportModule,
     FavoritesModule,
+    LocationsModule,
+    SubcategoriesModule,
   ],
   controllers: [],
   providers: [],

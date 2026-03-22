@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
@@ -83,6 +84,15 @@ export class CreateUserDto {
   settlement?: string;
 
   @ApiProperty({
+    example: 'Родовое поместье "Луговое"',
+    required: false,
+    description: 'Родовое поместье',
+  })
+  @IsString()
+  @IsOptional()
+  estate?: string;
+
+  @ApiProperty({
     example: 'https://storage.yandexcloud.net/bucket/users/xxx.jpg',
     required: false,
     description: 'Фото/аватар (URL)',
@@ -114,7 +124,9 @@ export class CreateUserDto {
     required: false,
     description: 'Email для связи (отличный от логина)',
   })
-  @IsEmail()
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @IsString()
   @IsOptional()
+  @IsEmail()
   contactEmail?: string;
 }

@@ -17,6 +17,7 @@ export function AppLayout() {
 
   const menuItems: MenuProps['items'] = [
     { key: routes.listings, label: 'Объявления' },
+    { key: routes.favorites, label: 'Избранное' },
     {
       key: routes.adCreate,
       label: 'Создать объявление',

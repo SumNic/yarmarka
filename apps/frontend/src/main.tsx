@@ -1,8 +1,9 @@
-import { StrictMode, useEffect, useState } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ConfigProvider, theme } from 'antd'
 import ruRU from 'antd/locale/ru_RU'
+import { useTheme } from './hooks/useTheme'
 
 import './index.css'
 import 'antd/dist/reset.css'
@@ -70,16 +71,7 @@ const darkTheme = {
 }
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false)
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    setIsDark(mediaQuery.matches)
-
-    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
+  const { isDark } = useTheme()
 
   return (
     <ConfigProvider

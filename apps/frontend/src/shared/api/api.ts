@@ -524,6 +524,23 @@ export const api = {
     checkJob: (id: number) => request<{ isFavorite: boolean }>('GET', `/api/favorites/jobs/${id}/check`),
   },
 
+  locations: {
+    list: () => request<unknown[]>('GET', '/api/locations'),
+    getCountries: () => request<string[]>('GET', '/api/locations/countries'),
+    getRegionsByCountry: (country: string) => request<string[]>('GET', `/api/locations/countries/${encodeURIComponent(country)}/regions`),
+    getLocalitiesByRegion: (country: string, region: string) => request<string[]>('GET', `/api/locations/countries/${encodeURIComponent(country)}/regions/${encodeURIComponent(region)}/localities`),
+    create: (locations: { country: string; region?: string; locality?: string }[]) => request<unknown[]>('POST', '/api/locations', { body: { locations } }),
+  },
+
+  subcategories: {
+    list: (type?: 'product' | 'service' | 'job') => request<unknown[]>('GET', '/api/subcategories' + (type ? `?type=${type}` : '')),
+    getProducts: () => request<unknown[]>('GET', '/api/subcategories/products'),
+    getServices: () => request<unknown[]>('GET', '/api/subcategories/services'),
+    getJobs: () => request<unknown[]>('GET', '/api/subcategories/jobs'),
+    getCustom: (type: 'product' | 'service' | 'job') => request<unknown[]>('GET', `/api/subcategories/custom?type=${type}`),
+    create: (subcategories: { name: string; type: 'product' | 'service' | 'job'; isCustom?: boolean }[]) => request<unknown[]>('POST', '/api/subcategories', { body: { subcategories } }),
+  },
+
   // type-safety hint: keep linkage to generated OpenAPI paths
   _paths: null as unknown as paths,
 }
@@ -539,7 +556,12 @@ export type ApiUser = {
   isEstate?: boolean
   estateType?: 'INDIVIDUAL' | 'SETTLEMENT'
   settlement?: string
+  estate?: string
   photoUrl?: string
+  about?: string
+  phone?: string
+  contactEmail?: string
+  roles?: { id?: number; value?: string }[]
 }
 
 export function parseApiUser(payload: unknown): ApiUser {
@@ -556,6 +578,14 @@ export function parseApiUser(payload: unknown): ApiUser {
     estateType:
       payload.estateType === 'INDIVIDUAL' || payload.estateType === 'SETTLEMENT' ? payload.estateType : undefined,
     settlement: typeof payload.settlement === 'string' ? payload.settlement : undefined,
+    estate: typeof payload.estate === 'string' ? payload.estate : undefined,
     photoUrl: typeof payload.photoUrl === 'string' ? payload.photoUrl : undefined,
+    about: typeof payload.about === 'string' ? payload.about : undefined,
+    phone: typeof payload.phone === 'string' ? payload.phone : undefined,
+    contactEmail: typeof payload.contactEmail === 'string' ? payload.contactEmail : undefined,
+    roles: Array.isArray(payload.roles) ? payload.roles.map(r => ({
+      id: typeof r.id === 'number' ? r.id : undefined,
+      value: typeof r.value === 'string' ? r.value : undefined,
+    })) : undefined,
   }
 }

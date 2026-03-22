@@ -36,6 +36,7 @@ export interface UserCreationAttrs {
   isEstate?: boolean;
   estateType?: EstateType;
   settlement?: string;
+  estate?: string;
 
   about?: string;
   phone?: string;
@@ -115,6 +116,14 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare settlement: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'Родовое поместье',
+  })
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare estate: string | null;
 
   @ApiProperty({
     type: String,
