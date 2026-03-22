@@ -8,16 +8,24 @@ import {
 } from 'sequelize-typescript';
 import { User } from 'src/common/models/User.model';
 
+export enum Currency {
+  RUB = 'RUB',
+  BYN = 'BYN',
+  UAH = 'UAH',
+  KZT = 'KZT',
+}
+
 interface ProductCreationAttrs {
   title: string;
   description?: string;
   price: number;
+  currency?: Currency;
   category?: string;
   photoUrls?: string[];
   userId: number;
 }
 
-@Table({ tableName: 'products' })
+@Table({ tableName: 'products', timestamps: true })
 export class Product extends Model<Product, ProductCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
@@ -35,6 +43,13 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
   @Column({ type: DataType.FLOAT, allowNull: false })
   declare price: number;
+
+  @Column({
+    type: DataType.ENUM(...Object.values(Currency)),
+    defaultValue: Currency.RUB,
+    allowNull: false,
+  })
+  declare currency: Currency;
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare category: string;

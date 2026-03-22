@@ -90,4 +90,31 @@ export class CreateUserDto {
   @IsUrl()
   @IsOptional()
   photoUrl?: string;
+
+  @ApiProperty({
+    example: 'Я занимаюсь пчеловодством уже 10 лет',
+    required: false,
+    description: 'О себе',
+  })
+  @IsString()
+  @IsOptional()
+  about?: string;
+
+  @ApiProperty({
+    example: '+79991234567',
+    required: false,
+    description: 'Телефон для связи',
+  })
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  @ApiProperty({
+    example: 'contact@example.com',
+    required: false,
+    description: 'Email для связи (отличный от логина)',
+  })
+  @IsEmail()
+  @IsOptional()
+  contactEmail?: string;
 }

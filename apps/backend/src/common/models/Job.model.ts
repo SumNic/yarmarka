@@ -7,17 +7,19 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { User } from 'src/common/models/User.model';
+import { Currency } from './Product.model';
 
 interface JobCreationAttrs {
   title: string;
   description?: string;
   salary?: number;
+  currency?: Currency;
   category?: string;
   photoUrls?: string[];
   userId: number;
 }
 
-@Table({ tableName: 'jobs' })
+@Table({ tableName: 'jobs', timestamps: true })
 export class Job extends Model<Job, JobCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
@@ -35,6 +37,13 @@ export class Job extends Model<Job, JobCreationAttrs> {
 
   @Column({ type: DataType.FLOAT, allowNull: true })
   declare salary: number;
+
+  @Column({
+    type: DataType.ENUM(...Object.values(Currency)),
+    defaultValue: Currency.RUB,
+    allowNull: false,
+  })
+  declare currency: Currency;
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare category: string;

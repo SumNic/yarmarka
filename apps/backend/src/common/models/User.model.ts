@@ -36,6 +36,10 @@ export interface UserCreationAttrs {
   isEstate?: boolean;
   estateType?: EstateType;
   settlement?: string;
+
+  about?: string;
+  phone?: string;
+  contactEmail?: string;
 }
 
 @Table({ tableName: 'users' })
@@ -111,6 +115,30 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare settlement: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'О себе',
+  })
+  @Column({ type: DataType.TEXT, allowNull: true })
+  declare about: string | null;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'Телефон для связи',
+  })
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare phone: string | null;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'Email для связи (отличный от логина)',
+  })
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare contactEmail: string | null;
 
   @HasMany(() => Product)
   declare products: Product[];

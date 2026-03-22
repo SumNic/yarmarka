@@ -9,6 +9,7 @@ import { Product } from 'src/common/models/Product.model';
 import { Service } from 'src/common/models/Service.model';
 import { Job } from 'src/common/models/Job.model';
 import { Resume } from 'src/common/models/Resume.model';
+import { Favorite } from 'src/common/models/Favorite.model';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from 'src/products/products.module';
@@ -22,6 +23,7 @@ import { Role } from 'src/common/models/Role.model';
 import { SupportController } from './support/support.controller';
 import { SupportService } from './support/support.service';
 import { SupportModule } from './support/support.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   imports: [
@@ -70,7 +72,7 @@ import { SupportModule } from './support/support.module';
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('POSTGRES_URI'),
         dialect: 'postgres',
-        models: [User, Product, Service, Job, Resume, Role, UserRoles],
+        models: [User, Product, Service, Job, Resume, Role, UserRoles, Favorite],
         autoLoadModels: false,
         synchronize: false,
       }),
@@ -84,6 +86,7 @@ import { SupportModule } from './support/support.module';
     ResumesModule,
     RolesModule,
     SupportModule,
+    FavoritesModule,
   ],
   controllers: [],
   providers: [],

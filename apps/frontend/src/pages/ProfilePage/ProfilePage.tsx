@@ -31,6 +31,9 @@ type ProfileFormValues = {
   region?: string;
   district?: string;
   settlement?: string;
+  about?: string;
+  phone?: string;
+  contactEmail?: string;
 };
 
 type AdItem = {
@@ -70,6 +73,9 @@ export function ProfilePage() {
       region: user?.region,
       district: user?.district,
       settlement: user?.settlement,
+      about: user?.about || '',
+      phone: user?.phone || '',
+      contactEmail: user?.contactEmail || '',
     };
   }, [user]);
 
@@ -135,6 +141,9 @@ export function ProfilePage() {
         region: values.region,
         district: values.district,
         settlement: values.settlement,
+        about: values.about,
+        phone: values.phone,
+        contactEmail: values.contactEmail,
       });
 
       setIsEdit(false);
@@ -349,6 +358,30 @@ export function ProfilePage() {
                 <Input placeholder="Название поселения (если есть)" />
               </Form.Item>
 
+              <Form.Item
+                label="О себе"
+                name="about"
+                rules={[{ max: 1000, message: "Максимум 1000 символов" }]}
+              >
+                <Input.TextArea rows={4} placeholder="Расскажите о себе" />
+              </Form.Item>
+
+              <Form.Item
+                label="Телефон для связи"
+                name="phone"
+                rules={[{ max: 50, message: "Максимум 50 символов" }]}
+              >
+                <Input placeholder="+7 999 123-45-67" />
+              </Form.Item>
+
+              <Form.Item
+                label="Email для связи"
+                name="contactEmail"
+                rules={[{ type: 'email', message: "Введите корректный email" }]}
+              >
+                <Input placeholder="contact@example.com" />
+              </Form.Item>
+
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Email подтверждён">
                   {user.isEmailVerified ? "Да" : "Нет"}
@@ -368,6 +401,15 @@ export function ProfilePage() {
               </Descriptions.Item>
               <Descriptions.Item label="Поселение">
                 {user.settlement ?? "—"}
+              </Descriptions.Item>
+              <Descriptions.Item label="О себе">
+                {user.about ?? "—"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Телефон">
+                {user.phone ?? "—"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email для связи">
+                {user.contactEmail ?? "—"}
               </Descriptions.Item>
               <Descriptions.Item label="Email подтверждён">
                 {user.isEmailVerified ? "Да" : "Нет"}

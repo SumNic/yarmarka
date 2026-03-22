@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Layout, Menu, Typography, Button, Space, Drawer } from 'antd'
+import { Layout, Menu, Typography, Button, Space, Drawer, Avatar } from 'antd'
 import type { MenuProps } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { routes } from '@/router/routes'
@@ -17,14 +17,28 @@ export function AppLayout() {
 
   const menuItems: MenuProps['items'] = [
     { key: routes.listings, label: 'Объявления' },
+    {
+      key: routes.adCreate,
+      label: 'Создать объявление',
+      style: { fontWeight: 'bold' },
+    },
     { key: routes.home, label: 'О сайте' },
   ]
 
   const authButtons = user ? (
     <Space size="small">
-      <Button type="primary" size="small" onClick={() => navigate(routes.profile)}>
-        {user.name || 'Профиль'}
-      </Button>
+      <Avatar
+        size="default"
+        src={user.photoUrl || undefined}
+        onClick={() => navigate(routes.profile)}
+        style={{
+          cursor: 'pointer',
+          backgroundColor: '#52c41a',
+          border: '2px solid #389e0d',
+        }}
+      >
+        {!user.photoUrl && user.name?.charAt(0).toUpperCase()}
+      </Avatar>
     </Space>
   ) : (
     <Space size="small">

@@ -151,6 +151,7 @@
   .appLayout__header {
     padding: 0 16px;
     height: 64px;
+    align-items: center !important;
   }
 
   .appLayout__brandLogo {
@@ -165,16 +166,26 @@
     display: none;
   }
 
-  .appLayout__mobile-menu-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
+  .appLayout__mobile-menu-btn.ant-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     color: #1a1a1a !important;
-    height: 48px !important;
-    width: 48px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 32px !important;
   }
 
-  .appLayout__mobile-menu-btn:hover {
+  .appLayout__mobile-menu-btn.ant-btn svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .appLayout__mobile-menu-btn.ant-btn:hover {
     color: var(--color-primary) !important;
   }
 

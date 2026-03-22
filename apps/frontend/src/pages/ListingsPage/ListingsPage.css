@@ -124,17 +124,49 @@
   padding: 16px;
 }
 
-.listingsPage__card .ant-typography {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: 8px !important;
+.listingsPage__cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .listingsPage__price {
   font-weight: var(--font-weight-bold);
   font-size: 1.1rem;
   color: var(--color-primary);
-  margin-top: 8px;
+}
+
+.listingsPage__favoriteBtn {
+  color: #999 !important;
+  padding: 4px !important;
+  width: auto !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.listingsPage__favoriteBtn:hover,
+.listingsPage__favoriteBtn.active {
+  color: #e91e63 !important;
+}
+
+.listingsPage__favoriteBtn.active svg {
+  transform: scale(1.1);
+}
+
+.listingsPage__cardTitle {
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--color-text-primary) !important;
+  margin-bottom: 4px !important;
+  font-size: 1rem !important;
+}
+
+.listingsPage__cardDate {
+  font-size: 0.8rem;
+  color: #999;
 }
 
 .listingsPage__empty {

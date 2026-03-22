@@ -8,6 +8,7 @@ import {
   message,
   Modal,
   Segmented,
+  Select,
   Space,
   Typography,
   Upload,
@@ -38,6 +39,7 @@ type FormValues = {
   category?: string;
   price?: number;
   salary?: number;
+  currency?: 'RUB' | 'BYN' | 'UAH' | 'KZT';
 };
 
 function ensureListingType(value: unknown): ListingType {
@@ -86,6 +88,7 @@ export function AdEditorPage(props: Props) {
         category: "",
         price: undefined,
         salary: undefined,
+        currency: 'RUB',
       });
     }
   }, [mode, form, type, jobMode]);
@@ -128,6 +131,7 @@ export function AdEditorPage(props: Props) {
         const category = typeof x.category === "string" ? x.category : "";
         const price = typeof x.price === "number" ? x.price : undefined;
         const salary = typeof x.salary === "number" ? x.salary : undefined;
+        const currency = typeof x.currency === "string" ? x.currency : 'RUB';
 
         const photoUrls = Array.isArray(x.photoUrls)
           ? x.photoUrls.filter((u): u is string => typeof u === "string")
@@ -150,6 +154,7 @@ export function AdEditorPage(props: Props) {
           category,
           price,
           salary,
+          currency,
         });
       })
       .catch((e) => {
@@ -185,6 +190,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price ?? 0,
+            currency: values.currency || 'RUB',
             userId: user.id,
             photoUrls: [],
           })) as unknown as { id?: number };
@@ -209,6 +215,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price,
+            currency: values.currency,
             userId: user.id,
           });
         }
@@ -221,6 +228,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price,
+            currency: values.currency || 'RUB',
             userId: user.id,
             photoUrls: [],
           })) as unknown as { id?: number };
@@ -245,6 +253,7 @@ export function AdEditorPage(props: Props) {
             description: values.description,
             category: values.category,
             price: values.price,
+            currency: values.currency,
             userId: user.id,
           });
         }
@@ -276,6 +285,7 @@ export function AdEditorPage(props: Props) {
               description: values.description,
               category: values.category,
               salary: values.salary,
+              currency: values.currency || 'RUB',
               userId: user.id,
               photoUrls: [],
             })) as unknown as { id?: number };
@@ -300,6 +310,7 @@ export function AdEditorPage(props: Props) {
               description: values.description,
               category: values.category,
               salary: values.salary,
+              currency: values.currency,
               userId: user.id,
             });
           }
@@ -587,6 +598,19 @@ export function AdEditorPage(props: Props) {
                 <InputNumber style={{ width: "100%" }} min={0} />
               </Form.Item>
             ) : null}
+
+            {(showPrice || showSalary) && (
+              <Form.Item name="currency" label="Валюта" initialValue="RUB">
+                <Select
+                  options={[
+                    { label: 'Российский рубль (₽)', value: 'RUB' },
+                    { label: 'Белорусский рубль (Br)', value: 'BYN' },
+                    { label: 'Украинская гривна (₴)', value: 'UAH' },
+                    { label: 'Казахский тенге (₸)', value: 'KZT' },
+                  ]}
+                />
+              </Form.Item>
+            )}
 
             <Space wrap>
               <Button

@@ -75,11 +75,41 @@
 }
 
 /* Content */
+.adViewPage__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .adViewPage__title {
   font-size: 1.75rem !important;
   font-weight: 700 !important;
   color: var(--color-text-primary);
-  margin-bottom: 12px !important;
+  margin: 0 !important;
+  flex: 1;
+}
+
+.adViewPage__favoriteBtn {
+  color: #999 !important;
+  padding: 8px !important;
+  width: auto !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--transition-fast) !important;
+  flex-shrink: 0;
+}
+
+.adViewPage__favoriteBtn:hover,
+.adViewPage__favoriteBtn.active {
+  color: #e91e63 !important;
+}
+
+.adViewPage__favoriteBtn.active svg {
+  transform: scale(1.1);
 }
 
 .adViewPage__category {
@@ -100,6 +130,21 @@
   margin-bottom: 20px !important;
 }
 
+.adViewPage__contacts {
+  margin-bottom: 20px;
+}
+
+.adViewPage__contactBtn {
+  border-radius: var(--radius-md);
+  padding: 10px 24px;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.adViewPage__contactBtn:hover {
+  transform: translateY(-2px);
+}
+
 .adViewPage__description {
   font-size: 1rem;
   line-height: var(--line-height-relaxed);
@@ -108,23 +153,13 @@
   background: var(--color-background);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border-light);
+  margin-top: 20px;
 }
 
 .adViewPage__actions {
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--color-border-light);
-}
-
-.adViewPage__backBtn {
-  border-radius: var(--radius-md);
-  padding: 10px 24px;
-  font-weight: var(--font-weight-medium);
-  transition: all var(--transition-fast);
-}
-
-.adViewPage__backBtn:hover {
-  transform: translateY(-2px);
 }
 
 .adViewPage__editBtn {
@@ -139,6 +174,10 @@
 .adViewPage__editBtn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.adViewPage__contactModal {
+  padding: 10px 0;
 }
 
 /* Loading & Error States */

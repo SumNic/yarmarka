@@ -7,17 +7,19 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { User } from 'src/common/models/User.model';
+import { Currency } from './Product.model';
 
 interface ServiceCreationAttrs {
   title: string;
   description?: string;
   price?: number;
+  currency?: Currency;
   category?: string;
   photoUrls?: string[];
   userId: number;
 }
 
-@Table({ tableName: 'services' })
+@Table({ tableName: 'services', timestamps: true })
 export class Service extends Model<Service, ServiceCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
@@ -35,6 +37,13 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
 
   @Column({ type: DataType.FLOAT, allowNull: true })
   declare price: number;
+
+  @Column({
+    type: DataType.ENUM(...Object.values(Currency)),
+    defaultValue: Currency.RUB,
+    allowNull: false,
+  })
+  declare currency: Currency;
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare category: string;

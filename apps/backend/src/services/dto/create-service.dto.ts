@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -10,6 +11,7 @@ import {
   IsUrl,
   Min,
 } from 'class-validator';
+import { Currency } from 'src/common/models/Product.model';
 
 export class CreateServiceDto {
   @ApiProperty({ example: 'Стрижка', description: 'Название услуги' })
@@ -35,6 +37,17 @@ export class CreateServiceDto {
   @Min(0)
   @IsOptional()
   price?: number;
+
+  @ApiProperty({
+    example: 'RUB',
+    required: false,
+    description: 'Валюта (RUB, BYN, UAH, KZT)',
+    enum: Currency,
+    default: Currency.RUB,
+  })
+  @IsEnum(Currency)
+  @IsOptional()
+  currency?: Currency;
 
   @ApiProperty({
     example: 'Красота',

@@ -185,6 +185,7 @@ export const api = {
   },
 
   users: {
+    get: (id: number) => request<unknown>('GET', `/api/users/${id}`),
     update: (id: number, dto: components['schemas']['UpdateUserDto']) =>
       request<void>('PATCH', `/api/users/${id}`, { body: dto }),
 
@@ -508,6 +509,19 @@ export const api = {
 
   support: {
     sendMessage: (dto: components['schemas']['SupportMessageDto']) => request<void>('POST', '/api/support', { body: dto }),
+  },
+
+  favorites: {
+    list: () => request<unknown>('GET', '/api/favorites'),
+    addProduct: (id: number) => request<void>('POST', `/api/favorites/products/${id}`),
+    removeProduct: (id: number) => request<void>('DELETE', `/api/favorites/products/${id}`),
+    checkProduct: (id: number) => request<{ isFavorite: boolean }>('GET', `/api/favorites/products/${id}/check`),
+    addService: (id: number) => request<void>('POST', `/api/favorites/services/${id}`),
+    removeService: (id: number) => request<void>('DELETE', `/api/favorites/services/${id}`),
+    checkService: (id: number) => request<{ isFavorite: boolean }>('GET', `/api/favorites/services/${id}/check`),
+    addJob: (id: number) => request<void>('POST', `/api/favorites/jobs/${id}`),
+    removeJob: (id: number) => request<void>('DELETE', `/api/favorites/jobs/${id}`),
+    checkJob: (id: number) => request<{ isFavorite: boolean }>('GET', `/api/favorites/jobs/${id}/check`),
   },
 
   // type-safety hint: keep linkage to generated OpenAPI paths
