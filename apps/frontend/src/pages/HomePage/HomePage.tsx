@@ -18,13 +18,16 @@ export function HomePage() {
             Родовая Ярмарка
           </Title>
           <Paragraph className="homePage__subtitle">
-            Онлайн‑пространство объявлений для товаров, услуг и работы в родовых поместьях
+            Для тех, кто живёт мечтой о родовом поместье и сажает кедры для внуков
           </Paragraph>
 
           <div className="homePage__mission">
             <Paragraph>
-              Это не маркетплейс и не гонка за охватами. Это живая ярмарка — место встречи людей, 
-              хозяйств и семей, объединённых ценностями земли, рода и взаимного доверия.
+              Здесь встречаются люди, объединённые мечтой о жизни на своей земле — 
+              в любви, в согласии с природой, в заботе о детях и внуках.
+            </Paragraph>
+            <Paragraph>
+              Каждое объявление — это не просто товар или услуга. Это история семьи, хозяйства, живого труда.
             </Paragraph>
           </div>
 
@@ -41,23 +44,36 @@ export function HomePage() {
       <div className="homePage__features">
         <Card className="homePage__featureCard">
           <span className="homePage__featureIcon">🤝</span>
-          <Title level={4}>Свои люди</Title>
+          <Title level={4}>Люди, а не покупатели</Title>
           <Paragraph>
-            Каждое объявление — это человек, семья или хозяйство. Мы исходим из доверия и ясных намерений.
+            За каждым объявлением стоит семья, хозяйство, живой труд. Мы видим в каждом соседа и единомышленника.
           </Paragraph>
         </Card>
         <Card className="homePage__featureCard">
           <span className="homePage__featureIcon">🍃</span>
-          <Title level={4}>Минимум шума</Title>
+          <Title level={4}>Честность и простота</Title>
           <Paragraph>
-            Без агрессивной рекламы и баннеров. Внимание — ценный ресурс.
+            Нет скрытых платежей и навязанных услуг. Всё ясно и прозрачно — как в добром соседстве.
           </Paragraph>
         </Card>
         <Card className="homePage__featureCard">
           <span className="homePage__featureIcon">🌳</span>
-          <Title level={4}>Долгий путь</Title>
+          <Title level={4}>Жизнь на поколения</Title>
           <Paragraph>
-            Проект создаётся на годы: устойчиво, просто и с уважением к людям.
+            Проект создаётся на годы. Мы выбираем путь устойчивый, как кедр, — для детей и внуков.
+          </Paragraph>
+        </Card>
+      </div>
+
+      {/* Info Section */}
+      <div className="homePage__info">
+        <Card className="homePage__infoCard">
+          <Title level={4}>Кто может размещать объявления</Title>
+          <Paragraph>
+            <strong>Товары, услуги, вакансии</strong> — только для тех, кто уже живёт в родовом поместье и создаёт пространство любви на своей земле.
+          </Paragraph>
+          <Paragraph>
+            <strong>Ищу работу</strong> — доступно всем приверженцам идей о родовых поместьях, даже если вы пока только в пути к своей земле.
           </Paragraph>
         </Card>
       </div>

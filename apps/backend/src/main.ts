@@ -22,8 +22,6 @@ async function bootstrap() {
   // CORS настройки
   const clientUrl = JSON.parse(configService.get('CLIENT_URL') || '[]');
   const mode = configService.get('NODE_ENV') || 'prod';
-  console.log(mode, 'mode');
-  console.log(clientUrl, 'clientUrl');
 
   const isDev = mode === 'dev';
 

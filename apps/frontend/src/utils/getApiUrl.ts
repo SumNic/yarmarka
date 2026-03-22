@@ -10,8 +10,6 @@
  */
 export function getApiBaseUrl(): string {
   const isDev = import.meta.env.DEV;
-  console.log(isDev, 'isDev');
-  
   
   // Production - используем переменную окружения или относительный путь
   if (!isDev) {

@@ -63,7 +63,8 @@ export function AdEditorPage(props: Props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [productPhotoUrls, setProductPhotoUrls] = useState<string[]>([]);
-  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const [servicePhotoUrls, setServicePhotoUrls] = useState<string[]>([]);
+  const [jobPhotoUrls, setJobPhotoUrls] = useState<string[]>([]);
   const [photosError, setPhotosError] = useState<string | null>(null);
 
   // Temporary storage for photos before product is saved
@@ -135,6 +136,10 @@ export function AdEditorPage(props: Props) {
         setType(typeFromParams);
         if (typeFromParams === "products") {
           setProductPhotoUrls(photoUrls.slice(0, 10));
+        } else if (typeFromParams === "services") {
+          setServicePhotoUrls(photoUrls.slice(0, 10));
+        } else if (typeFromParams === "jobs") {
+          setJobPhotoUrls(photoUrls.slice(0, 10));
         }
 
         form.setFieldsValue({
@@ -186,19 +191,19 @@ export function AdEditorPage(props: Props) {
 
           // Upload pending photos after product is created
           if (created?.id && pendingPhotos.length > 0) {
-            setIsUploadingPhotos(true);
             const filesToUpload = pendingPhotos.map(p => p.file);
-            const uploadResults = await api.products.uploadPhotos(created.id, filesToUpload);
-
-            const uploadedUrls = uploadResults
-              .map(r => r.url)
-              .filter((url): url is string => typeof url === "string");
-
-            setProductPhotoUrls(uploadedUrls.slice(0, 10));
+            await api.products.uploadPhotos(created.id, filesToUpload);
             setPendingPhotos([]);
-            setIsUploadingPhotos(false);
           }
         } else if (idFromParams) {
+          // Upload pending photos first (before updating product details)
+          if (pendingPhotos.length > 0) {
+            const filesToUpload = pendingPhotos.map(p => p.file);
+            await api.products.uploadPhotos(idFromParams, filesToUpload);
+            setPendingPhotos([]);
+          }
+
+          // Then update product details (without photoUrls to avoid overwriting)
           await api.products.update(idFromParams, {
             title: values.title,
             description: values.description,
@@ -211,14 +216,30 @@ export function AdEditorPage(props: Props) {
 
       if (values.type === "services") {
         if (mode === "create") {
-          await api.services.create({
+          const created = (await api.services.create({
             title: values.title,
             description: values.description,
             category: values.category,
             price: values.price,
             userId: user.id,
-          });
+            photoUrls: [],
+          })) as unknown as { id?: number };
+
+          // Upload pending photos after service is created
+          if (created?.id && pendingPhotos.length > 0) {
+            const filesToUpload = pendingPhotos.map(p => p.file);
+            await api.services.uploadPhotos(created.id, filesToUpload);
+            setPendingPhotos([]);
+          }
         } else if (idFromParams) {
+          // Upload pending photos first (before updating service details)
+          if (pendingPhotos.length > 0) {
+            const filesToUpload = pendingPhotos.map(p => p.file);
+            await api.services.uploadPhotos(idFromParams, filesToUpload);
+            setPendingPhotos([]);
+          }
+
+          // Then update service details (without photoUrls to avoid overwriting)
           await api.services.update(idFromParams, {
             title: values.title,
             description: values.description,
@@ -250,14 +271,30 @@ export function AdEditorPage(props: Props) {
           }
         } else {
           if (mode === "create") {
-            await api.jobs.create({
+            const created = (await api.jobs.create({
               title: values.title,
               description: values.description,
               category: values.category,
               salary: values.salary,
               userId: user.id,
-            });
+              photoUrls: [],
+            })) as unknown as { id?: number };
+
+            // Upload pending photos after job is created
+            if (created?.id && pendingPhotos.length > 0) {
+              const filesToUpload = pendingPhotos.map(p => p.file);
+              await api.jobs.uploadPhotos(created.id, filesToUpload);
+              setPendingPhotos([]);
+            }
           } else if (idFromParams) {
+            // Upload pending photos first (before updating job details)
+            if (pendingPhotos.length > 0) {
+              const filesToUpload = pendingPhotos.map(p => p.file);
+              await api.jobs.uploadPhotos(idFromParams, filesToUpload);
+              setPendingPhotos([]);
+            }
+
+            // Then update job details (without photoUrls to avoid overwriting)
             await api.jobs.update(idFromParams, {
               title: values.title,
               description: values.description,
@@ -293,35 +330,40 @@ export function AdEditorPage(props: Props) {
   }
 
   // Combine persisted URLs with pending local photos
-  const productPhotoFileList = useMemo<UploadFile[]>(() => {
-    const files: UploadFile[] = productPhotoUrls.slice(0, 10).map((url, index) => ({
+  const photoFileList = useMemo<UploadFile[]>(() => {
+    const currentPhotoUrls = type === "products"
+      ? productPhotoUrls
+      : type === "services"
+        ? servicePhotoUrls
+        : jobPhotoUrls;
+
+    const files: UploadFile[] = currentPhotoUrls.slice(0, 10).map((url, index) => ({
       uid: `persisted:${index}:${url}`,
       name: url.split("/").pop() ?? "photo",
       status: "done",
       url,
     }));
-    
-    // Add pending photos (not yet uploaded)
+
+    // Add pending photos (not yet uploaded) - show as done for preview
     pendingPhotos.forEach((photo, index) => {
       files.push({
         uid: `pending:${index}:${photo.file.name}`,
         name: photo.file.name,
-        status: "uploading",
-        percent: 0,
+        status: "done",
         thumbUrl: photo.preview,
       });
     });
-    
-    return files;
-  }, [productPhotoUrls, pendingPhotos]);
 
-  const productPhotosUploadProps: UploadProps = {
+    return files;
+  }, [productPhotoUrls, servicePhotoUrls, jobPhotoUrls, pendingPhotos, type]);
+
+  const photosUploadProps: UploadProps = {
     accept: "image/jpeg,image/png,image/webp",
     listType: "picture-card",
-    fileList: productPhotoFileList,
+    fileList: photoFileList,
     maxCount: 10,
     multiple: true,
-    disabled: !canEdit || isLoading || isUploadingPhotos,
+    disabled: !canEdit || isLoading,
 
     beforeUpload: (file) => {
       const error = validateImage(file);
@@ -329,7 +371,7 @@ export function AdEditorPage(props: Props) {
         setPhotosError(error);
         return Upload.LIST_IGNORE;
       }
-      
+
       // Add to pending photos instead of immediate upload
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -339,7 +381,7 @@ export function AdEditorPage(props: Props) {
         });
       };
       reader.readAsDataURL(file);
-      
+
       return false; // Prevent default upload
     },
 
@@ -349,12 +391,18 @@ export function AdEditorPage(props: Props) {
         setPendingPhotos((prev) => prev.filter((_, idx) => `pending:${idx}` !== file.uid.split(":")[1]));
         return true;
       }
-      
+
       // It's a persisted photo
       const url = typeof file.url === "string" ? file.url : null;
       if (!url) return true;
 
-      setProductPhotoUrls((prev) => prev.filter((u) => u !== url));
+      if (type === "products") {
+        setProductPhotoUrls((prev) => prev.filter((u) => u !== url));
+      } else if (type === "services") {
+        setServicePhotoUrls((prev) => prev.filter((u) => u !== url));
+      } else if (type === "jobs") {
+        setJobPhotoUrls((prev) => prev.filter((u) => u !== url));
+      }
       // TODO: backend delete
       return true;
     },
@@ -495,8 +543,30 @@ export function AdEditorPage(props: Props) {
 
             {type === "products" ? (
               <Form.Item label="Фото товара (до 10)">
-                <Upload {...productPhotosUploadProps}>
-                  {productPhotoFileList.length >= 10 ? null : (
+                <Upload {...photosUploadProps}>
+                  {photoFileList.length >= 10 ? null : (
+                    <div>
+                      <div style={{ marginBottom: 8 }}>+</div>
+                      <div style={{ fontSize: 12 }}>Загрузить</div>
+                    </div>
+                  )}
+                </Upload>
+              </Form.Item>
+            ) : type === "services" ? (
+              <Form.Item label="Фото услуги (до 10)">
+                <Upload {...photosUploadProps}>
+                  {photoFileList.length >= 10 ? null : (
+                    <div>
+                      <div style={{ marginBottom: 8 }}>+</div>
+                      <div style={{ fontSize: 12 }}>Загрузить</div>
+                    </div>
+                  )}
+                </Upload>
+              </Form.Item>
+            ) : type === "jobs" && jobMode === "vacancy" ? (
+              <Form.Item label="Фото вакансии (до 10)">
+                <Upload {...photosUploadProps}>
+                  {photoFileList.length >= 10 ? null : (
                     <div>
                       <div style={{ marginBottom: 8 }}>+</div>
                       <div style={{ fontSize: 12 }}>Загрузить</div>

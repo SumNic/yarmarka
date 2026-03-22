@@ -11,9 +11,14 @@ export class ServicesService {
   constructor(@InjectModel(Service) private serviceRepo: typeof Service) {}
 
   async create(userId: number, dto: CreateServiceDto) {
+    const photoUrls = Array.isArray(dto.photoUrls)
+      ? dto.photoUrls.slice(0, 10)
+      : [];
+
     return this.serviceRepo.create({
       ...(dto as any),
       userId,
+      photoUrls,
     });
   }
 
@@ -45,7 +50,25 @@ export class ServicesService {
 
   async update(actor: Actor, id: number, dto: UpdateServiceDto) {
     const entity = await this.findOneForActor(actor, id);
-    await entity.update(dto as any);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const patch: any = {};
+
+    // Copy only defined fields from dto
+    if (dto.title !== undefined) patch.title = dto.title;
+    if (dto.description !== undefined) patch.description = dto.description;
+    if (dto.category !== undefined) patch.category = dto.category;
+    if (dto.price !== undefined) patch.price = dto.price;
+    if (dto.photoUrls !== undefined) {
+      const normalizedPhotoUrls = Array.isArray(dto.photoUrls)
+        ? dto.photoUrls.slice(0, 10)
+        : [];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      patch.photoUrls = normalizedPhotoUrls;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await entity.update(patch);
     return entity;
   }
 

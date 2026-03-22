@@ -71,11 +71,8 @@ import { SupportModule } from './support/support.module';
         uri: configService.get<string>('POSTGRES_URI'),
         dialect: 'postgres',
         models: [User, Product, Service, Job, Resume, Role, UserRoles],
-        autoLoadModels: true,
-        synchronize: true,
-        sync: {
-          alter: true,
-        },
+        autoLoadModels: false,
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),

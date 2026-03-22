@@ -4,6 +4,7 @@ import type { MenuProps } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { routes } from '@/router/routes'
 import { useAuthStore } from '@/store/auth/useAuthStore'
+import logo from '@/assets/logo/logo.svg'
 import './AppLayout.css'
 
 const { Header, Content, Footer } = Layout
@@ -15,9 +16,8 @@ export function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const menuItems: MenuProps['items'] = [
-    { key: routes.home, label: 'Главная' },
     { key: routes.listings, label: 'Объявления' },
-    { key: routes.support, label: 'Техподдержка' },
+    { key: routes.home, label: 'О сайте' },
   ]
 
   const authButtons = user ? (
@@ -50,15 +50,15 @@ export function AppLayout() {
   return (
     <Layout className="appLayout">
       <Header className="appLayout__header">
-        <div className="appLayout__brand" onClick={() => navigate(routes.home)}>
-          <span className="appLayout__brandIcon">🌿</span>
+        <div className="appLayout__brand" onClick={() => navigate(routes.listings)}>
+          <img src={logo} alt="Родовая Ярмарка" className="appLayout__brandLogo" />
           <Typography.Text className="appLayout__brandText">Родовая Ярмарка</Typography.Text>
         </div>
         <Menu
           className="appLayout__menu"
           mode="horizontal"
           theme="light"
-          selectedKeys={selectedKeys?.length ? selectedKeys : [routes.home]}
+          selectedKeys={selectedKeys?.length ? selectedKeys : [routes.listings]}
           items={menuItems}
           onClick={(e) => navigate(e.key)}
         />
@@ -84,11 +84,11 @@ export function AppLayout() {
           <Menu
             mode="vertical"
             theme="light"
-            selectedKeys={selectedKeys?.length ? selectedKeys : [routes.home]}
+            selectedKeys={selectedKeys?.length ? selectedKeys : [routes.listings]}
             items={menuItems}
             onClick={(e) => handleMenuClick(e.key)}
           />
-          <div style={{ marginTop: 16 }}>{authButtons}</div>
+          {/* <div style={{ marginTop: 16 }}>{authButtons}</div> */}
         </Drawer>
         {authButtons}
       </Header>

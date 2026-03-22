@@ -1,5 +1,5 @@
 export const routes = {
-  home: '/',
+  home: '/about',
   listings: '/listings',
   login: '/auth/login',
   register: '/auth/register',
@@ -9,7 +9,6 @@ export const routes = {
   adCreate: '/ads/new',
   adView: '/ads/:type/:id',
   adEdit: '/ads/:type/:id/edit',
-  support: '/support',
 } as const
 
 export type ListingType = 'products' | 'services' | 'jobs'

@@ -15,7 +15,7 @@ export function ChangePasswordForm() {
 
   return (
     <Card title="Смена пароля">
-      <Space direction="vertical" size={12} style={{ width: '100%' }}>
+      <Space orientation="vertical" size={12} style={{ width: '100%' }}>
         {error ? <Alert type="error" message={error} showIcon /> : null}
 
         <Form layout="vertical" onFinish={onFinish} requiredMark={false}>

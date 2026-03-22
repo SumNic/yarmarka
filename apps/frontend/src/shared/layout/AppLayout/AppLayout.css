@@ -20,14 +20,15 @@
   border-bottom: 1px solid var(--color-border-light);
   height: var(--header-height);
   transition: all var(--transition-normal);
+  overflow: hidden;
 }
 
 .appLayout__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 4px 8px;
   border-radius: var(--radius-lg);
   transition: all var(--transition-fast);
   position: relative;
@@ -50,27 +51,30 @@
 
 .appLayout__brand:hover .appLayout__brandText {
   color: var(--color-primary);
-  transform: translateX(2px);
 }
 
-.appLayout__brandIcon {
-  font-size: 28px;
-  position: relative;
-  z-index: 1;
+.appLayout__brandLogo {
+  height: 40px;
+  width: auto;
+  display: block;
+  transition: transform var(--transition-fast);
+}
+
+.appLayout__brand:hover .appLayout__brandLogo {
+  transform: scale(1.05);
 }
 
 .appLayout__brandText {
   color: var(--color-text-primary);
   font-weight: var(--font-weight-bold);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-family: var(--font-heading);
   transition: all var(--transition-fast);
-  position: relative;
-  z-index: 1;
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  white-space: nowrap;
 }
 
 /* Menu */
@@ -115,16 +119,16 @@
 }
 
 .appLayout__menu :global(.ant-menu-horizontal > .ant-menu-item) {
-  padding: 0 16px !important;
-  height: var(--header-height) !important;
-  line-height: var(--header-height) !important;
+  padding: 0 12px !important;
   display: flex;
   align-items: center;
+  height: auto !important;
+  line-height: normal !important;
 }
 
 /* Content */
 .appLayout__content {
-  padding: 32px 24px;
+  padding: 24px 12px;
   min-height: calc(100vh - var(--header-height) - 80px);
   background: transparent;
 }
@@ -149,6 +153,10 @@
     height: 64px;
   }
 
+  .appLayout__brandLogo {
+    height: 36px;
+  }
+
   .appLayout__brandText {
     display: none;
   }
@@ -171,7 +179,7 @@
   }
 
   .appLayout__content {
-    padding: 16px;
+    padding: 8px;
   }
 }
 
@@ -189,6 +197,11 @@
 
   .appLayout__mobile-menu-btn:hover {
     color: var(--color-primary-dark) !important;
+  }
+
+  .appLayout__brandText {
+    color: #e0e0e0;
+    -webkit-text-fill-color: #e0e0e0;
   }
 }
 

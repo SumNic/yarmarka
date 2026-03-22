@@ -35,8 +35,13 @@
   width: 100%;
 }
 
-.adViewPage__carousel .slick-slide {
-  height: 400px;
+.adViewPage__carousel,
+.adViewPage__carousel .slick-list,
+.adViewPage__carousel .slick-track,
+.adViewPage__carousel .slick-slide,
+.adViewPage__carousel .slick-slide > div {
+  height: 100% !important;
+  position: relative !important;
 }
 
 .adViewPage__slide {
@@ -49,18 +54,23 @@
 }
 
 .adViewPage__imageWrap {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: var(--radius-xl);
 }
 
 .adViewPage__image {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  object-position: center;
   display: block;
 }
 

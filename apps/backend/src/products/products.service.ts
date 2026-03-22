@@ -52,9 +52,14 @@ export class ProductsService {
     const entity = await this.findOneForActor(actor, id);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const patch: any = { ...(dto as any) };
+    const patch: any = {};
 
-    if (dto.photoUrls) {
+    // Copy only defined fields from dto
+    if (dto.title !== undefined) patch.title = dto.title;
+    if (dto.description !== undefined) patch.description = dto.description;
+    if (dto.category !== undefined) patch.category = dto.category;
+    if (dto.price !== undefined) patch.price = dto.price;
+    if (dto.photoUrls !== undefined) {
       const normalizedPhotoUrls = Array.isArray(dto.photoUrls)
         ? dto.photoUrls.slice(0, 10)
         : [];

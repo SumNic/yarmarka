@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "@/router/routes";
 import { api } from "@/shared/api/api";
 import { useAuthStore } from "@/store/auth/useAuthStore";
+import type { components } from "@/utils/api";
 import { ChangePasswordForm } from "./ChangePasswordForm";
 import "./ProfilePage.css";
 
@@ -58,6 +59,9 @@ export function ProfilePage() {
   const [myJobs, setMyJobs] = useState<AdItem[]>([]);
   const [myResumes, setMyResumes] = useState<AdItem[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
+
+  const [isMessageSent, setIsMessageSent] = useState(false);
+  const [supportMessageError, setSupportMessageError] = useState<string | null>(null);
 
   const initialValues = useMemo<ProfileFormValues>(() => {
     return {
@@ -101,6 +105,18 @@ export function ProfilePage() {
       console.error('Failed to load my ads:', e);
     } finally {
       setAdsLoading(false);
+    }
+  }
+
+  async function handleSupportMessageFinish(values: components["schemas"]["SupportMessageDto"]) {
+    setSupportMessageError(null);
+    try {
+      await api.support.sendMessage(values);
+      setIsMessageSent(true);
+    } catch (e) {
+      setSupportMessageError(
+        e instanceof Error ? e.message : "Не удалось отправить сообщение"
+      );
     }
   }
 
@@ -394,6 +410,52 @@ export function ProfilePage() {
             />
           )}
         </Card>
+
+        <Card title="Техподдержка">
+          <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+            <Typography.Paragraph style={{ margin: 0 }}>
+              Если вопрос срочный — напишите сообщение, мы увидим его и свяжемся.
+            </Typography.Paragraph>
+
+            {isMessageSent ? (
+              <Alert
+                type="success"
+                showIcon
+                title="Сообщение принято. Спасибо!"
+              />
+            ) : null}
+            {supportMessageError ? (
+              <Alert
+                type="error"
+                showIcon
+                title={`${supportMessageError}` || "Не удалось отправить сообщение"}
+              />
+            ) : null}
+
+            {!isMessageSent && !supportMessageError && (
+              <Form
+                layout="vertical"
+                onFinish={handleSupportMessageFinish}
+                requiredMark={false}
+                style={{ marginTop: 12 }}
+              >
+                <Form.Item
+                  name="message"
+                  label="Сообщение"
+                  rules={[{ required: true }]}
+                >
+                  <Input.TextArea
+                    rows={6}
+                    placeholder="Опишите проблему или предложение."
+                  />
+                </Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Отправить
+                </Button>
+              </Form>
+            )}
+          </Space>
+        </Card>
       </Space>
     </div>
   );
@@ -407,7 +469,7 @@ function renderAdsList(items: AdItem[], type: 'product' | 'service' | 'job' | 'r
   }
 
   return (
-    <Space direction="vertical" size={12} style={{ width: '100%' }}>
+    <Space orientation="vertical" size={12} style={{ width: '100%' }}>
       {items.map((item) => (
         <Card
           key={item.id}

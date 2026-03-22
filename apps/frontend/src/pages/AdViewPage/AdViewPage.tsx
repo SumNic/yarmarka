@@ -14,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { ListingType } from "@/router/routes";
 import { api } from "@/shared/api/api";
 import { DEFAULT_IMAGE } from "@/utils/constants";
+import { useAuthStore } from "@/store/auth/useAuthStore";
 import "./AdViewPage.css";
 
 const { Title, Text } = Typography;
@@ -26,6 +27,7 @@ type AdData = {
   price?: number;
   salary?: number;
   photoUrls?: string[];
+  userId?: number;
 };
 
 function ensureListingType(value: unknown): ListingType {
@@ -35,6 +37,7 @@ function ensureListingType(value: unknown): ListingType {
 export function AdViewPage() {
   const navigate = useNavigate();
   const params = useParams();
+  const user = useAuthStore((state) => state.user);
 
   const type = ensureListingType(params.type);
   const id = params.id ? Number(params.id) : null;
@@ -79,6 +82,7 @@ export function AdViewPage() {
                 (u): u is string => typeof u === "string"
               )
             : [],
+          userId: typeof x.userId === "number" ? x.userId : undefined,
         });
       })
       .catch((e) => {
@@ -176,15 +180,17 @@ export function AdViewPage() {
 
               <Space className="adViewPage__actions">
                 <Button className="adViewPage__backBtn" onClick={() => navigate(-1)}>Назад</Button>
-                <Button
-                  className="adViewPage__editBtn"
-                  type="primary"
-                  onClick={() =>
-                    navigate(`/ads/${type}/${data.id}/edit`)
-                  }
-                >
-                  Редактировать
-                </Button>
+                {data.userId === user?.id && (
+                  <Button
+                    className="adViewPage__editBtn"
+                    type="primary"
+                    onClick={() =>
+                      navigate(`/ads/${type}/${data.id}/edit`)
+                    }
+                  >
+                    Редактировать
+                  </Button>
+                )}
               </Space>
             </Space>
           </Card>

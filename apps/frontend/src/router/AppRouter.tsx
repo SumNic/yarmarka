@@ -10,7 +10,6 @@ import { RequestPasswordResetPage } from '@/pages/auth/RequestPasswordResetPage/
 import { ConfirmPasswordResetPage } from '@/pages/auth/ConfirmPasswordResetPage/ConfirmPasswordResetPage'
 import { ProfilePage } from '@/pages/ProfilePage/ProfilePage'
 import { AdEditorPage } from '@/pages/AdEditorPage/AdEditorPage'
-import { SupportPage } from '@/pages/SupportPage/SupportPage'
 import { AdViewPage } from '@/pages/AdViewPage/AdViewPage'
 
 export function AppRouter() {
@@ -27,9 +26,9 @@ export function AppRouter() {
         <Route path={routes.adCreate} element={<AdEditorPage mode="create" />} />
         <Route path={routes.adEdit} element={<AdEditorPage mode="edit" />} />
         <Route path={routes.adView} element={<AdViewPage />} />
-        <Route path={routes.support} element={<SupportPage />} />
 
-        <Route path="*" element={<Navigate to={routes.home} replace />} />
+        <Route path="/" element={<Navigate to={routes.listings} replace />} />
+        <Route path="*" element={<Navigate to={routes.listings} replace />} />
       </Route>
     </Routes>
   )

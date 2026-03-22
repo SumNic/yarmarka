@@ -166,24 +166,20 @@ export function ListingsPage() {
                     >
                       {item.photoUrls.map((url, i) => (
                         <div key={i} className="listingsPage__slide">
-                          <div className="listingsPage__imageWrap">
-                            <img
-                              src={url}
-                              className="listingsPage__image"
-                              alt={item.title || ""}
-                            />
-                          </div>
+                          <img
+                            src={url}
+                            className="listingsPage__image"
+                            alt={item.title || ""}
+                          />
                         </div>
                       ))}
                     </Carousel>
                   ) : (
-                    <div className="listingsPage__imageWrap">
-                      <img
-                        src={DEFAULT_IMAGE}
-                        className="listingsPage__image"
-                        alt="Без изображения"
-                      />
-                    </div>
+                    <img
+                      src={DEFAULT_IMAGE}
+                      className="listingsPage__image"
+                      alt="Без изображения"
+                    />
                   )}
                 </div>
                 <Title level={5} style={{ marginBottom: 4 }}>
