@@ -785,6 +785,11 @@ export interface components {
              */
             category?: string;
             /**
+             * @description Ссылки на фото услуги (до 10 шт.)
+             * @example ["https://storage.yandexcloud.net/bucket/services/xxx.jpg"]
+             */
+            photoUrls?: string[];
+            /**
              * @description ID пользователя-владельца
              * @example 1
              */
@@ -811,6 +816,11 @@ export interface components {
              * @example Красота
              */
             category?: string;
+            /**
+             * @description Ссылки на фото услуги (до 10 шт.)
+             * @example ["https://storage.yandexcloud.net/bucket/services/xxx.jpg"]
+             */
+            photoUrls?: string[];
             /**
              * @description ID пользователя-владельца
              * @example 1
@@ -839,6 +849,11 @@ export interface components {
              */
             category?: string;
             /**
+             * @description Ссылки на фото (до 10 шт.)
+             * @example ["https://storage.yandexcloud.net/bucket/jobs/xxx.jpg"]
+             */
+            photoUrls?: string[];
+            /**
              * @description ID пользователя-владельца
              * @example 1
              */
@@ -865,6 +880,11 @@ export interface components {
              * @example Строительство
              */
             category?: string;
+            /**
+             * @description Ссылки на фото (до 10 шт.)
+             * @example ["https://storage.yandexcloud.net/bucket/jobs/xxx.jpg"]
+             */
+            photoUrls?: string[];
             /**
              * @description ID пользователя-владельца
              * @example 1
