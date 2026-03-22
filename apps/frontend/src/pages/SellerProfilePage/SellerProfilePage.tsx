@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Descriptions, Empty, Space, Spin, Tabs, Typography } from "antd";
+import { Card, Descriptions, Empty, Spin, Tabs, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/shared/api/api";

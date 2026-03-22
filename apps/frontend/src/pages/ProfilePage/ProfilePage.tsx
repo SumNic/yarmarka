@@ -74,7 +74,6 @@ export function ProfilePage() {
   // Location state
   const [countries, setCountries] = useState<string[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
-  const [localities, setLocalities] = useState<string[]>([]);
   const [locationsLoading, setLocationsLoading] = useState(false);
 
   const initialValues = useMemo<ProfileFormValues>(() => {
@@ -121,7 +120,6 @@ export function ProfilePage() {
     const country = form.getFieldValue('country');
     if (!country) {
       setRegions([]);
-      setLocalities([]);
       return;
     }
 

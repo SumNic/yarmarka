@@ -1,23 +1,12 @@
-import { Alert, Button, Card, Empty, Form, Input, Select, Space, Spin, Tabs, Typography, message } from "antd";
+import { Alert, Button, Card, Empty, Form, Input, Spin, Tabs, Typography, message } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/shared/api/api";
 import { useAuthStore } from "@/store/auth/useAuthStore";
 import "./AdminPage.css";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
-
-type LocationItem = {
-  country: string;
-  region?: string;
-  locality?: string;
-};
-
-type SubcategoryItem = {
-  name: string;
-  type: 'product' | 'service' | 'job';
-};
 
 export function AdminPage() {
   const navigate = useNavigate();
@@ -120,7 +109,7 @@ export function AdminPage() {
                   requiredMark={false}
                 >
                   <Alert
-                    message="Формат данных"
+                    title="Формат данных"
                     description={
                       <pre style={{ margin: 0, fontSize: '12px' }}>
 {`[
@@ -174,7 +163,7 @@ export function AdminPage() {
                   requiredMark={false}
                 >
                   <Alert
-                    message="Формат данных"
+                    title="Формат данных"
                     description={
                       <pre style={{ margin: 0, fontSize: '12px' }}>
 {`[

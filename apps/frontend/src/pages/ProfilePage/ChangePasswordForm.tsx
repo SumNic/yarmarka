@@ -16,7 +16,7 @@ export function ChangePasswordForm() {
   return (
     <Card title="Смена пароля">
       <Space orientation="vertical" size={12} style={{ width: '100%' }}>
-        {error ? <Alert type="error" message={error} showIcon /> : null}
+        {error ? <Alert type="error" title={error} showIcon /> : null}
 
         <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
           <Form.Item name="currentPassword" label="Текущий пароль" rules={[{ required: true }]}>

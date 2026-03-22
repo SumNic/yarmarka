@@ -6,7 +6,7 @@ import "./FavoritesPage.css";
 import { useAuthStore } from "@/store/auth/useAuthStore";
 import { DEFAULT_IMAGE } from "@/utils/constants";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 type FavoriteItem = {
   id?: number;
@@ -137,13 +137,13 @@ export function FavoritesPage() {
       const response = await api.favorites.list();
       const favorites = toFavoriteItems(response);
       const productIds = favorites.filter(f => f.productId).map(f => f.productId!) as number[];
-      
+
       if (productIds.length === 0) return [];
-      
-      const allProducts = await api.products.list();
+
+      const allProducts = await api.products.list() as Record<string, unknown>[];
       return allProducts
-        .filter((p: Record<string, unknown>) => productIds.includes(p.id as number))
-        .map((p: Record<string, unknown>) => ({
+        .filter((p) => productIds.includes(p.id as number))
+        .map((p) => ({
           id: p.id as number,
           title: p.title as string,
           description: p.description as string,
@@ -165,13 +165,13 @@ export function FavoritesPage() {
       const response = await api.favorites.list();
       const favorites = toFavoriteItems(response);
       const serviceIds = favorites.filter(f => f.serviceId).map(f => f.serviceId!) as number[];
-      
+
       if (serviceIds.length === 0) return [];
-      
-      const allServices = await api.services.list();
+
+      const allServices = await api.services.list() as Record<string, unknown>[];
       return allServices
-        .filter((s: Record<string, unknown>) => serviceIds.includes(s.id as number))
-        .map((s: Record<string, unknown>) => ({
+        .filter((s) => serviceIds.includes(s.id as number))
+        .map((s) => ({
           id: s.id as number,
           title: s.title as string,
           description: s.description as string,
@@ -193,13 +193,13 @@ export function FavoritesPage() {
       const response = await api.favorites.list();
       const favorites = toFavoriteItems(response);
       const jobIds = favorites.filter(f => f.jobId).map(f => f.jobId!) as number[];
-      
+
       if (jobIds.length === 0) return [];
-      
-      const allJobs = await api.jobs.list();
+
+      const allJobs = await api.jobs.list() as Record<string, unknown>[];
       return allJobs
-        .filter((j: Record<string, unknown>) => jobIds.includes(j.id as number))
-        .map((j: Record<string, unknown>) => ({
+        .filter((j) => jobIds.includes(j.id as number))
+        .map((j) => ({
           id: j.id as number,
           title: j.title as string,
           description: j.description as string,
